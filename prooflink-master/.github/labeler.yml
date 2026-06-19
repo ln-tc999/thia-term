@@ -1,0 +1,58 @@
+# Labels applied by actions/labeler based on files changed
+"pkg:core":
+  - changed-files:
+      - any-glob-to-any-file: packages/core/**
+
+"pkg:sdk":
+  - changed-files:
+      - any-glob-to-any-file: packages/sdk/**
+
+"pkg:shared":
+  - changed-files:
+      - any-glob-to-any-file: packages/shared/**
+
+"pkg:x402":
+  - changed-files:
+      - any-glob-to-any-file: packages/x402-compliance/**
+
+"pkg:mcp-server":
+  - changed-files:
+      - any-glob-to-any-file: packages/mcp-server/**
+
+"pkg:contracts":
+  - changed-files:
+      - any-glob-to-any-file: packages/contracts/**
+
+"app:api":
+  - changed-files:
+      - any-glob-to-any-file: apps/api/**
+
+"app:dashboard":
+  - changed-files:
+      - any-glob-to-any-file: apps/dashboard/**
+
+"ci/cd":
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - Dockerfile
+          - docker-compose.yml
+
+"documentation":
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - "*.md"
+
+"tests":
+  - changed-files:
+      - any-glob-to-any-file:
+          - tests/**
+          - "**/*.test.ts"
+          - "**/*.spec.ts"
+
+"dependencies":
+  - changed-files:
+      - any-glob-to-any-file:
+          - pnpm-lock.yaml
+          - "**/package.json"

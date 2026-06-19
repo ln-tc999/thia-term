@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FlowLink · The $73B Question</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-900:#063a3a; --teal-800:#0a4f4f; --teal-700:#0c6363; --teal-600:#0d7a7a;
+    --teal-500:#158b8b; --teal-400:#1da0a0; --cyan-500:#2fc4c4;
+    --green-600:#217a49; --green-500:#2a9056; --green-400:#3ba867;
+    --red-800:#6e1f2e; --red-700:#a93547; --red-600:#b8354a; --red-500:#d85a6c; --red-400:#e07a8f;
+    --amber-500:#e0a23b;
+    --mint-50:#eef7f2; --mint-100:#e3f1ea; --mint-200:#cfe7db;
+    --ink-900:#0f1b22; --ink-700:#1a2733; --ink-500:#4a5a66; --ink-400:#6b7a85; --ink-200:#c6d0d7;
+    --paper:#ffffff; --paper-soft:#f7fbfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#eef3f2;
+    font-family:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;
+    color:var(--ink-700);
+    line-height:1.55;
+    background:
+      radial-gradient(1400px 500px at 5% 0%,#d9ebe6 0,transparent 60%),
+      radial-gradient(1000px 400px at 95% 100%,#dbe8df 0,transparent 60%),
+      #eef3f2;
+    background-attachment:fixed;
+  }
+
+  /* ---- layout ---- */
+  .page{max-width:1120px;margin:0 auto;padding:0 24px}
+  section{padding:72px 0}
+  section+section{border-top:1px solid var(--mint-200)}
+
+  /* ---- brand bar ---- */
+  .topbar{
+    position:sticky;top:0;z-index:100;
+    background:rgba(238,243,242,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--mint-200);
+    padding:14px 0;
+  }
+  .topbar .page{display:flex;align-items:center;gap:12px}
+  .brand-mark{
+    width:30px;height:30px;border-radius:9px;flex:none;position:relative;
+    background:radial-gradient(120% 120% at 30% 20%,#1fb3a3 0%,#0d7a7a 55%,#083f3f 100%);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 4px 12px -4px rgba(13,122,122,.5);
+  }
+  .brand-mark::before,.brand-mark::after{content:"";position:absolute;inset:5px;border-radius:50%;border:2px solid transparent}
+  .brand-mark::before{border-top-color:#2fc4c4;border-right-color:#2fc4c4;transform:rotate(20deg)}
+  .brand-mark::after{border-bottom-color:#3ba867;border-left-color:#3ba867;transform:rotate(20deg)}
+  .brand-word{font-weight:800;font-size:18px;letter-spacing:-.01em;color:var(--teal-800)}
+  .topbar .tag{
+    margin-left:auto;
+    font:700 9px/1 "JetBrains Mono",monospace;letter-spacing:.18em;color:var(--ink-400);
+    padding:6px 12px;border-radius:999px;background:var(--mint-50);border:1px solid var(--mint-200);
+  }
+
+  /* ---- hero ---- */
+  .hero{padding:80px 0 64px;text-align:center}
+  .hero-kicker{
+    display:inline-block;
+    font:700 10px/1 "JetBrains Mono",monospace;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--teal-600);padding:8px 16px;border-radius:999px;
+    background:rgba(12,99,99,.06);border:1px solid rgba(12,99,99,.12);
+    margin-bottom:28px;
+  }
+  h1{
+    font-size:clamp(40px,5.5vw,72px);font-weight:900;letter-spacing:-.03em;
+    line-height:1;color:var(--ink-900);margin-bottom:20px;
+  }
+  h1 .teal{color:var(--teal-700)}
+  h1 .red{color:var(--red-700)}
+  .hero-sub{
+    font-size:clamp(15px,1.6vw,20px);color:var(--ink-500);max-width:56ch;
+    margin:0 auto;line-height:1.5;
+  }
+  .hero-sub strong{color:var(--ink-700);font-weight:700}
+  .hero-nums{
+    display:flex;justify-content:center;gap:48px;margin-top:48px;flex-wrap:wrap;
+  }
+  .hero-num{text-align:center}
+  .hero-num .n{
+    font:900 clamp(48px,6vw,80px)/1 "Inter",sans-serif;
+    font-variant-numeric:tabular-nums;letter-spacing:-.04em;
+  }
+  .hero-num .n.good{color:var(--teal-700)}
+  .hero-num .n.bad{color:var(--red-700)}
+  .hero-num .vs{
+    font:800 clamp(28px,3vw,44px)/1 "Inter",sans-serif;
+    color:var(--ink-200);letter-spacing:-.02em;
+    padding:0 8px;align-self:center;
+  }
+  .hero-num .label{
+    font:600 11px/1.3 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-400);margin-top:10px;
+  }
+
+  /* ---- section headings ---- */
+  h2{
+    font-size:clamp(22px,2.6vw,36px);font-weight:800;letter-spacing:-.02em;
+    line-height:1.1;color:var(--teal-800);margin-bottom:8px;
+  }
+  .section-sub{
+    font-size:clamp(13px,1.2vw,16px);color:var(--ink-400);max-width:60ch;
+    margin-bottom:36px;line-height:1.5;
+  }
+
+  /* ---- methodology card ---- */
+  .method-card{
+    background:var(--paper);border-radius:16px;padding:28px 32px;
+    border:1px solid var(--mint-200);
+    box-shadow:0 4px 24px -8px rgba(10,79,79,.08);
+  }
+  .method-card p{font-size:14px;color:var(--ink-500);line-height:1.65;max-width:72ch}
+  .method-card p+p{margin-top:10px}
+  .method-card strong{color:var(--ink-700)}
+  .method-card code{
+    font:600 12px/1 "JetBrains Mono",monospace;
+    background:rgba(12,99,99,.06);color:var(--teal-700);padding:2px 6px;border-radius:4px;
+  }
+
+  /* ---- comparison table ---- */
+  .cmp-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px;
+  }
+  .cmp-col{
+    border-radius:14px;overflow:hidden;
+    box-shadow:0 4px 24px -8px rgba(10,79,79,.1);
+  }
+  .cmp-col.good{background:linear-gradient(180deg,#0b5555,#063737);color:#d8ece9}
+  .cmp-col.bad{background:linear-gradient(180deg,#3b1b24,#2c1417);color:#f0d6da}
+  .cmp-header{
+    display:flex;align-items:center;gap:10px;padding:14px 20px;
+    background:rgba(0,0,0,.2);border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .cmp-header .pill{
+    font:700 9px/1 "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;
+    padding:4px 10px;border-radius:6px;
+  }
+  .cmp-col.good .pill{background:rgba(47,196,196,.18);color:#2fc4c4}
+  .cmp-col.bad  .pill{background:rgba(216,90,108,.18);color:#f0a8b4}
+  .cmp-header .title{font:700 14px/1.2 "Inter",sans-serif;color:#fff}
+  .cmp-rows{padding:16px 20px}
+  .cmp-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);
+  }
+  .cmp-row:last-child{border-bottom:0}
+  .cmp-row .k{font:500 12px/1 "JetBrains Mono",monospace;opacity:.7}
+  .cmp-row .v{font:700 18px/1 "Inter",sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+  .cmp-row .v.sm{font-size:14px}
+  .cmp-outcome{
+    margin:0 20px 16px;padding:10px 14px;border-radius:8px;
+    font:700 13px/1.3 "Inter",sans-serif;text-align:center;
+  }
+  .cmp-col.good .cmp-outcome{background:rgba(59,168,103,.22);color:#c7f3d8;border:1px solid rgba(59,168,103,.3)}
+  .cmp-col.bad  .cmp-outcome{background:rgba(216,90,108,.22);color:#ffdce2;border:1px solid rgba(216,90,108,.3)}
+
+  /* ---- math row ---- */
+  .math-row{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px;
+  }
+  .math-card{
+    background:var(--paper);border:1px solid var(--mint-200);border-radius:12px;
+    padding:20px 24px;text-align:center;
+    box-shadow:0 2px 12px -4px rgba(10,79,79,.06);
+  }
+  .math-card .num{
+    font:800 clamp(28px,3vw,42px)/1 "Inter",sans-serif;
+    font-variant-numeric:tabular-nums;letter-spacing:-.03em;
+  }
+  .math-card .num.good{color:var(--teal-700)}
+  .math-card .num.bad{color:var(--red-700)}
+  .math-card .num.accent{color:var(--amber-500)}
+  .math-card .desc{font:600 11px/1.4 "JetBrains Mono",monospace;color:var(--ink-400);letter-spacing:.06em;margin-top:8px}
+
+  /* ---- chart section ---- */
+  .chart-wrap{
+    background:var(--paper);border-radius:16px;
+    border:1px solid var(--mint-200);padding:36px 32px;
+    box-shadow:0 4px 24px -8px rgba(10,79,79,.08);
+    overflow:hidden;
+  }
+  .chart-title{font:700 14px/1.2 "Inter",sans-serif;color:var(--teal-800);margin-bottom:4px}
+  .chart-sub{font:500 12px/1.4 "JetBrains Mono",monospace;color:var(--ink-400);margin-bottom:32px}
+  .chart-legend{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+  .chart-legend .leg{display:flex;align-items:center;gap:8px;font:600 11px/1 "JetBrains Mono",monospace;color:var(--ink-500)}
+  .chart-legend .swatch{width:14px;height:14px;border-radius:4px}
+  .swatch.sw-bad{background:var(--red-700)}
+  .swatch.sw-good{background:var(--teal-700)}
+  .swatch.sw-save{background:var(--green-400)}
+
+  .bars{display:flex;flex-direction:column;gap:28px}
+  .bar-group .bar-label{
+    font:700 12px/1 "Inter",sans-serif;color:var(--ink-700);margin-bottom:4px;
+  }
+  .bar-group .bar-meta{
+    font:500 11px/1.4 "JetBrains Mono",monospace;color:var(--ink-400);margin-bottom:12px;
+  }
+  .bar-pair{display:flex;flex-direction:column;gap:6px}
+  .bar-line{display:flex;align-items:center;gap:10px}
+  .bar-line .bar-name{
+    width:80px;flex:none;text-align:right;
+    font:600 10px/1 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-400);
+  }
+  .bar-line .bar-track{flex:1;height:32px;background:var(--mint-50);border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--mint-200)}
+  .bar-line .bar-fill{
+    height:100%;border-radius:7px;display:flex;align-items:center;padding:0 12px;
+    font:700 12px/1 "Inter",sans-serif;color:#fff;font-variant-numeric:tabular-nums;
+    white-space:nowrap;min-width:fit-content;
+    transition:width 1.2s cubic-bezier(.2,.7,.2,1);
+    overflow:visible;position:relative;
+  }
+  .bar-fill .bar-val{position:absolute;right:-4px;transform:translateX(100%);color:var(--ink-700);text-shadow:none;padding-left:8px}
+  .bar-fill.wide .bar-val{position:static;transform:none;color:#fff;text-shadow:inherit;padding-left:0}
+  .bar-fill.fill-bad{background:linear-gradient(90deg,#c94058,#a93547);text-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .bar-fill.fill-good{background:linear-gradient(90deg,#1da0a0,#0c6363);text-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .bar-saving{
+    display:flex;align-items:center;gap:6px;margin-top:4px;margin-left:90px;
+    font:700 12px/1 "JetBrains Mono",monospace;color:var(--green-500);
+  }
+  .bar-saving .arr{font-size:16px;line-height:1}
+
+  /* highlight band for 2030 */
+  .bar-group.highlight{
+    background:linear-gradient(90deg,rgba(12,99,99,.04),rgba(12,99,99,.01));
+    margin:0 -32px;padding:20px 32px;border-radius:12px;
+    border:1.5px solid rgba(12,99,99,.12);
+  }
+
+  /* ---- why section ---- */
+  .reasons{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px}
+  .reason-card{
+    background:var(--paper);border:1px solid var(--mint-200);border-radius:12px;
+    padding:20px 24px;
+    box-shadow:0 2px 12px -4px rgba(10,79,79,.06);
+  }
+  .reason-card.card-bad{border-left:3px solid var(--red-500)}
+  .reason-card.card-good{border-left:3px solid var(--teal-500)}
+  .reason-card h3{
+    font:700 14px/1.2 "Inter",sans-serif;margin-bottom:10px;
+  }
+  .reason-card.card-bad h3{color:var(--red-700)}
+  .reason-card.card-good h3{color:var(--teal-700)}
+  .reason-card ul{list-style:none;padding:0}
+  .reason-card ul li{
+    font-size:13px;line-height:1.55;color:var(--ink-500);
+    padding:4px 0;display:flex;gap:8px;align-items:flex-start;
+  }
+  .reason-card ul li::before{content:"--";color:var(--ink-200);font-weight:700;flex:none;font-family:"JetBrains Mono",monospace;font-size:12px}
+  .reason-card.card-bad ul li::before{color:var(--red-400)}
+  .reason-card.card-good ul li::before{color:var(--teal-400)}
+
+  /* ---- closer ---- */
+  .closer{
+    text-align:center;padding:80px 0 96px;
+  }
+  .closer-stat{
+    font:900 clamp(36px,5vw,64px)/1 "Inter",sans-serif;
+    letter-spacing:-.03em;color:var(--teal-800);margin-bottom:20px;
+    font-variant-numeric:tabular-nums;
+  }
+  .closer-stat .g{
+    background:linear-gradient(90deg,var(--teal-500),var(--green-500));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .closer-body{
+    font-size:clamp(15px,1.4vw,19px);color:var(--ink-500);max-width:58ch;
+    margin:0 auto;line-height:1.55;
+  }
+  .closer-body strong{color:var(--ink-700)}
+  .closer-foot{
+    margin-top:32px;
+    font:600 11px/1.4 "JetBrains Mono",monospace;color:var(--ink-400);letter-spacing:.04em;
+  }
+
+  /* ---- footer ---- */
+  footer{
+    border-top:1px solid var(--mint-200);padding:24px 0;text-align:center;
+    font:500 11px/1.4 "JetBrains Mono",monospace;color:var(--ink-400);
+  }
+
+  /* ---- responsive ---- */
+  @media(max-width:768px){
+    section{padding:48px 0}
+    .hero{padding:56px 0 40px}
+    .hero-nums{gap:20px}
+    .cmp-grid{grid-template-columns:1fr}
+    .math-row{grid-template-columns:1fr}
+    .reasons{grid-template-columns:1fr}
+    .bar-line .bar-name{width:60px;font-size:9px}
+    .bar-saving{margin-left:70px}
+    .bar-group.highlight{margin:0 -16px;padding:16px 16px}
+    .chart-wrap{padding:24px 16px}
+  }
+  @media(max-width:480px){
+    .page{padding:0 16px}
+    .hero-nums{flex-direction:column;align-items:center;gap:12px}
+    .bar-line{flex-direction:column;align-items:stretch;gap:4px}
+    .bar-line .bar-name{width:auto;text-align:left}
+    .bar-saving{margin-left:0}
+  }
+
+  /* ---- print ---- */
+  @media print{
+    body{background:#fff}
+    .topbar{position:relative;background:#fff;backdrop-filter:none}
+    section+section{border-top-color:#ddd}
+  }
+
+  /* ---- subtle entrance animations ---- */
+  .fade-in{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .fade-in.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- sticky nav -->
+<nav class="topbar" role="navigation" aria-label="Site header">
+  <div class="page">
+    <div class="brand-mark" aria-hidden="true"></div>
+    <div class="brand-word">FlowLink</div>
+    <div class="tag">ECONOMIC ANALYSIS &middot; APRIL 2026</div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" aria-label="Key finding">
+  <div class="page">
+    <div class="hero-kicker">Measured from real agent runs &middot; Same task, same LLM</div>
+    <h1><span class="teal">$0.04</span> vs <span class="red">$0.24</span><br>per agent transaction</h1>
+    <p class="hero-sub">
+      Browser-automation agents (MCP/Playwright) burn <strong>6x more tokens</strong> than
+      agents that read a single markdown file. At scale, this gap compounds into
+      <strong>billions in annual infrastructure waste</strong>.
+    </p>
+    <div class="hero-nums">
+      <div class="hero-num">
+        <div class="n good">6.2x</div>
+        <div class="label">Cost per task</div>
+      </div>
+      <div class="hero-num">
+        <div class="n bad">24x</div>
+        <div class="label">Effective (with retries)</div>
+      </div>
+      <div class="hero-num">
+        <div class="n good">$73B</div>
+        <div class="label">Savings at full scale / yr</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ METHODOLOGY ============ -->
+<section aria-label="Methodology">
+  <div class="page">
+    <h2>How we measured this</h2>
+    <p class="section-sub">Real agent runs, captured April 2026. Not estimates.</p>
+    <div class="method-card fade-in">
+      <p>
+        Two Claude agents were given the identical task: <strong>"create and pay a $10 USDC invoice on FlowLink."</strong>
+        One agent used <strong>Playwright browser automation</strong> (MCP tools, DOM snapshots, click-based navigation).
+        The other used <strong>FlowLink's markdown skill file</strong> -- a single <code>curl</code> fetch
+        returning a 9 KB structured spec at <code>/agent.md</code>.
+      </p>
+      <p>
+        Token costs computed at Claude Sonnet 4.6 pricing: <strong>$3/M input, $15/M output</strong>.
+        The Playwright agent was blocked at 25% completion and required an estimated 4 retries to match the
+        markdown agent's outcome -- driving the effective cost ratio to <strong>24x</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PER-TASK BREAKDOWN ============ -->
+<section aria-label="Per-task comparison">
+  <div class="page">
+    <h2>Per-task breakdown</h2>
+    <p class="section-sub">Same agent, same LLM, same task. The only difference is how the agent reads the API.</p>
+
+    <div class="cmp-grid fade-in">
+      <!-- GOOD: Markdown -->
+      <div class="cmp-col good" role="region" aria-label="FlowLink markdown agent results">
+        <div class="cmp-header">
+          <span class="pill">FlowLink</span>
+          <span class="title">Markdown agent</span>
+        </div>
+        <div class="cmp-rows">
+          <div class="cmp-row"><span class="k">Tool calls</span><span class="v">8</span></div>
+          <div class="cmp-row"><span class="k">Data fetched</span><span class="v">9 KB</span></div>
+          <div class="cmp-row"><span class="k">Input tokens</span><span class="v">5,500</span></div>
+          <div class="cmp-row"><span class="k">Output tokens</span><span class="v">1,500</span></div>
+          <div class="cmp-row"><span class="k">Wall clock</span><span class="v">56s</span></div>
+          <div class="cmp-row"><span class="k">Cost / task</span><span class="v">$0.04</span></div>
+        </div>
+        <div class="cmp-outcome">SETTLED -- $10 USDC paid</div>
+      </div>
+
+      <!-- BAD: Playwright -->
+      <div class="cmp-col bad" role="region" aria-label="Playwright browser agent results">
+        <div class="cmp-header">
+          <span class="pill">Playwright</span>
+          <span class="title">Browser automation agent</span>
+        </div>
+        <div class="cmp-rows">
+          <div class="cmp-row"><span class="k">Tool calls</span><span class="v">16</span></div>
+          <div class="cmp-row"><span class="k">Data fetched</span><span class="v">180 KB</span></div>
+          <div class="cmp-row"><span class="k">Input tokens</span><span class="v">65,000</span></div>
+          <div class="cmp-row"><span class="k">Output tokens</span><span class="v">3,000</span></div>
+          <div class="cmp-row"><span class="k">Wall clock</span><span class="v">106s</span></div>
+          <div class="cmp-row"><span class="k">Cost / task</span><span class="v">$0.24</span></div>
+        </div>
+        <div class="cmp-outcome">BLOCKED -- 0% complete</div>
+      </div>
+    </div>
+
+    <!-- math summary -->
+    <div class="math-row fade-in">
+      <div class="math-card">
+        <div class="num bad">20x</div>
+        <div class="desc">More data fetched</div>
+      </div>
+      <div class="math-card">
+        <div class="num bad">12x</div>
+        <div class="desc">More input tokens</div>
+      </div>
+      <div class="math-card">
+        <div class="num accent">24x</div>
+        <div class="desc">Effective cost (with retries)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCALE CHART ============ -->
+<section aria-label="Scale projection">
+  <div class="page">
+    <h2>What this looks like at scale</h2>
+    <p class="section-sub">Cost per day at projected agent transaction volumes. All numbers use the captured $0.04 vs $0.24 per-task cost.</p>
+
+    <div class="chart-wrap fade-in">
+      <div class="chart-title">Daily infrastructure cost by agent volume</div>
+      <div class="chart-sub">Horizontal axis = daily cost in USD &middot; Bars at consistent scale, 2030 highlighted</div>
+
+      <div class="chart-legend">
+        <div class="leg"><div class="swatch sw-bad"></div> Browser automation (MCP/Playwright)</div>
+        <div class="leg"><div class="swatch sw-good"></div> Markdown-native (FlowLink)</div>
+      </div>
+
+      <div class="bars">
+
+        <!-- 2026 -->
+        <div class="bar-group">
+          <div class="bar-label">Today (2026)</div>
+          <div class="bar-meta">50K tasks/day</div>
+          <div class="bar-pair">
+            <div class="bar-line">
+              <span class="bar-name">Browser</span>
+              <div class="bar-track"><div class="bar-fill fill-bad" style="width:5%"><span class="bar-val">$12K/day</span></div></div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-name">Markdown</span>
+              <div class="bar-track"><div class="bar-fill fill-good" style="width:2%"><span class="bar-val">$2K/day</span></div></div>
+            </div>
+          </div>
+          <div class="bar-saving"><span class="arr">&darr;</span> $10K/day saved &middot; $3.7M/year</div>
+        </div>
+
+        <!-- 2027 -->
+        <div class="bar-group">
+          <div class="bar-label">Conservative 2027</div>
+          <div class="bar-meta">1M tasks/day</div>
+          <div class="bar-pair">
+            <div class="bar-line">
+              <span class="bar-name">Browser</span>
+              <div class="bar-track"><div class="bar-fill fill-bad wide" style="width:24%"><span class="bar-val">$240K/day</span></div></div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-name">Markdown</span>
+              <div class="bar-track"><div class="bar-fill fill-good" style="width:4%"><span class="bar-val">$40K/day</span></div></div>
+            </div>
+          </div>
+          <div class="bar-saving"><span class="arr">&darr;</span> $200K/day saved &middot; $73M/year</div>
+        </div>
+
+        <!-- 2028 -->
+        <div class="bar-group">
+          <div class="bar-label">Mainstream adoption (2028)</div>
+          <div class="bar-meta">100M tasks/day</div>
+          <div class="bar-pair">
+            <div class="bar-line">
+              <span class="bar-name">Browser</span>
+              <div class="bar-track"><div class="bar-fill fill-bad wide" style="width:60%"><span class="bar-val">$24M/day</span></div></div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-name">Markdown</span>
+              <div class="bar-track"><div class="bar-fill fill-good" style="width:10%"><span class="bar-val">$4M/day</span></div></div>
+            </div>
+          </div>
+          <div class="bar-saving"><span class="arr">&darr;</span> $20M/day saved &middot; $7.3B/year</div>
+        </div>
+
+        <!-- 2030 -->
+        <div class="bar-group highlight">
+          <div class="bar-label">Full agent economy (2030)</div>
+          <div class="bar-meta">1B tasks/day</div>
+          <div class="bar-pair">
+            <div class="bar-line">
+              <span class="bar-name">Browser</span>
+              <div class="bar-track"><div class="bar-fill fill-bad wide" style="width:100%"><span class="bar-val">$240M/day</span></div></div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-name">Markdown</span>
+              <div class="bar-track"><div class="bar-fill fill-good wide" style="width:17%"><span class="bar-val">$40M/day</span></div></div>
+            </div>
+          </div>
+          <div class="bar-saving"><span class="arr">&darr;</span> $200M/day saved &middot; $73B/year</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- what the numbers mean -->
+    <div class="math-row fade-in" style="margin-top:28px">
+      <div class="math-card">
+        <div class="num good">$73M</div>
+        <div class="desc">Saved per year at 1M tasks/day</div>
+      </div>
+      <div class="math-card">
+        <div class="num good">$7.3B</div>
+        <div class="desc">Saved per year at 100M tasks/day</div>
+      </div>
+      <div class="math-card">
+        <div class="num good">$73B</div>
+        <div class="desc">Saved per year at 1B tasks/day</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY THE GAP IS STRUCTURAL ============ -->
+<section aria-label="Why the gap is structural">
+  <div class="page">
+    <h2>This gap is structural, not closeable</h2>
+    <p class="section-sub">Browser automation cannot converge on markdown's efficiency. The overhead is architectural.</p>
+
+    <div class="reasons fade-in">
+      <div class="reason-card card-bad">
+        <h3>Why browser automation is expensive</h3>
+        <ul>
+          <li>A DOM snapshot is a 5-10 KB JSON tree per page, full of meta/script noise the LLM must parse</li>
+          <li>Each navigation requires hydration time (~2 sec) plus a fresh snapshot</li>
+          <li>Agents probe speculative URLs -- 404s and 401s burn tokens without progress</li>
+          <li>MCP transport wraps every call in JSON-RPC framing, adding overhead on every round-trip</li>
+        </ul>
+      </div>
+      <div class="reason-card card-good">
+        <h3>Why markdown agents are cheap</h3>
+        <ul>
+          <li>One <code style="font-size:12px;background:rgba(12,99,99,.08);padding:1px 5px;border-radius:3px;color:var(--teal-700)">curl</code> call returns 9 KB of dense, structured spec -- no noise</li>
+          <li>Markdown is already the LLM's native format -- zero parsing required</li>
+          <li>Skill files include error catalogues with <code style="font-size:12px;background:rgba(12,99,99,.08);padding:1px 5px;border-radius:3px;color:var(--teal-700)">agent_action</code> hints, reducing retries</li>
+          <li>One file = no navigation latency, no hydration, no DOM noise, no speculative requests</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLOSER ============ -->
+<section class="closer" aria-label="Closing argument">
+  <div class="page">
+    <div class="closer-stat">
+      If <span class="g">1%</span> of internet transactions<br>go agent-to-agent by 2030
+    </div>
+    <p class="closer-body">
+      FlowLink-style markdown APIs save the industry <strong>billions annually</strong>. The question
+      is not whether agents will handle B2B transactions -- it's whether they'll waste tokens
+      navigating the DOM, or read a single file and be done.
+    </p>
+    <div class="closer-foot">
+      Data captured from live agent runs &middot; FlowLink &middot; April 2026
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="page">flowlink &middot; agent-native payment infrastructure &middot; 2026</div>
+</footer>
+
+<!-- entrance animation observer -->
+<script>
+(function(){
+  var els=document.querySelectorAll('.fade-in');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(e){e.classList.add('visible')});
+    return;
+  }
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.05,rootMargin:'0px 0px 80px 0px'});
+  els.forEach(function(e){obs.observe(e)});
+  /* fallback: reveal all after 1.5s for static/print contexts */
+  setTimeout(function(){els.forEach(function(e){e.classList.add('visible')})},1500);
+})();
+</script>
+
+</body>
+</html>

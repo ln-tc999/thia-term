@@ -1,0 +1,17 @@
+{
+  "name": "@prooflink/contracts",
+  "version": "0.1.0",
+  "description": "ProofLink Solidity smart contracts — compliance receipts, KYA, invoices, and x402 facilitator",
+  "license": "MIT",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vvv",
+    "test:gas": "forge test -vvv --gas-report",
+    "fmt": "forge fmt",
+    "fmt:check": "forge fmt --check",
+    "snapshot": "forge snapshot",
+    "deploy:base-sepolia": "forge script script/Deploy.s.sol --rpc-url base_sepolia --broadcast --verify",
+    "clean": "forge clean"
+  },
+  "devDependencies": {}
+}

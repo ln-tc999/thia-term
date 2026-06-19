@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prooflink-config
+  namespace: prooflink
+  labels:
+    app.kubernetes.io/name: prooflink
+    app.kubernetes.io/part-of: prooflink
+data:
+  NODE_ENV: production
+  PORT: "3001"
+  LOG_LEVEL: info
+  CORS_ORIGIN: https://app.prooflink.io
+  JWT_ISSUER: prooflink
+  JWT_AUDIENCE: prooflink-api

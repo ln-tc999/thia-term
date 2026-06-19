@@ -1,0 +1,15 @@
+{
+  "name": "flowlink-vercel",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "cd apps/web && pnpm install && pnpm build",
+    "start": "cd apps/web && pnpm start",
+    "dev": "cd apps/web && pnpm dev"
+  },
+  "dependencies": {
+    "next": "14.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

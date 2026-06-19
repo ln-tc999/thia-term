@@ -1,0 +1,61 @@
+{
+  "name": "@prooflink/integrations",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Optional external service integrations for ProofLink compliance infrastructure",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./notabene": {
+      "types": "./dist/notabene/index.d.ts",
+      "import": "./dist/notabene/index.js"
+    },
+    "./trm": {
+      "types": "./dist/trm/index.d.ts",
+      "import": "./dist/trm/index.js"
+    },
+    "./eas": {
+      "types": "./dist/eas/index.d.ts",
+      "import": "./dist/eas/index.js"
+    },
+    "./ipfs": {
+      "types": "./dist/ipfs/index.d.ts",
+      "import": "./dist/ipfs/index.js"
+    },
+    "./slack": {
+      "types": "./dist/slack/index.d.ts",
+      "import": "./dist/slack/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@prooflink/shared": "workspace:*",
+    "zod": "^3.24.0"
+  },
+  "peerDependencies": {
+    "@prooflink/core": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@prooflink/core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@prooflink/core": "workspace:*",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

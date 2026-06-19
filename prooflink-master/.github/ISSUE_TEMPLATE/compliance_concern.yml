@@ -1,0 +1,94 @@
+name: Compliance Concern
+description: Report a compliance or regulatory concern
+title: "[Compliance]: "
+labels: ["compliance", "priority:high"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ProofLink treats compliance concerns with the highest priority.
+        This template is for reporting issues related to regulatory compliance,
+        KYC/AML, sanctions screening, or x402 protocol compliance.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Compliance Category
+      options:
+        - "KYC/KYB — identity verification"
+        - "AML — anti-money laundering"
+        - "Sanctions — OFAC/SDN screening"
+        - "x402 protocol — payment compliance"
+        - "Data privacy — PII handling"
+        - "Audit trail — logging/reporting"
+        - "Regulatory — jurisdiction-specific"
+        - "Other"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: jurisdiction
+    attributes:
+      label: Jurisdiction
+      description: Which regulatory jurisdiction is affected?
+      options:
+        - "United States"
+        - "European Union"
+        - "United Kingdom"
+        - "Singapore"
+        - "Multiple jurisdictions"
+        - "Global / jurisdiction-agnostic"
+        - "Other (specify in description)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Concern Description
+      description: Describe the compliance concern in detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: regulatory_reference
+    attributes:
+      label: Regulatory Reference
+      description: Link to relevant regulation, guidance, or standard.
+      placeholder: "e.g., FinCEN Travel Rule, MiCA Article X, etc."
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "Informational — potential future concern"
+        - "Advisory — should be addressed before production"
+        - "Violation — active non-compliance risk"
+        - "Critical — immediate regulatory exposure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact Assessment
+      description: What is the potential impact if unaddressed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: remediation
+    attributes:
+      label: Suggested Remediation
+      description: How should this be addressed?
+
+  - type: checkboxes
+    id: disclosure
+    attributes:
+      label: Disclosure
+      options:
+        - label: This concern has NOT been reported to any regulatory body
+          required: true
+        - label: I understand this is a public issue tracker and have not included sensitive details
+          required: true

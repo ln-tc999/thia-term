@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlowLink — Scan it. Your agent pays.</title>
+<meta name="description" content="Scan the QR. Your AI agent reads one markdown file and pays the invoice. No SDK, no app, no second hop.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://flowlink.ink">
+<link rel="alternate" type="text/markdown" href="https://flowlink.ink/agent.md" title="Agent bundle">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!--
+  STANDALONE QR BOOTH PAGE
+  ========================
+  Drop this single file on any static host (Vercel / Netlify / GitHub Pages / S3).
+  The QR points at: https://flowlink.ink/agent.md
+  To change the target URL, edit BOTH places marked "TARGET URL" below
+  and re-generate the QR SVG via:
+      curl "https://flowlink.ink/api/qr?text=<URL_ENCODED>&size=720"
+-->
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --teal-900:#063a3a; --teal-800:#0a4f4f; --teal-700:#0c6363;
+    --teal-600:#0d7a7a; --teal-500:#158b8b; --teal-400:#1da0a0;
+    --mint-50:#eef7f2;  --mint-100:#e3f1ea; --mint-200:#cfe7db;
+    --ink-900:#0f1b22;  --ink-700:#1a2733;  --ink-500:#4a5a66; --ink-400:#6b7a85;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--mint-50); }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-700);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .booth {
+    min-height: 100vh;
+    padding: clamp(28px, 4vw, 64px);
+    display: flex; flex-direction: column;
+    gap: clamp(28px, 3vw, 48px);
+  }
+
+  /* HEADER */
+  .booth-head {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand-mark {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--teal-400), var(--teal-700));
+    box-shadow: 0 8px 24px -10px rgba(13,122,122,0.5);
+  }
+  .brand-text {
+    font-weight: 800; font-size: 32px; letter-spacing: -0.01em;
+    color: var(--teal-800);
+  }
+  .booth-meta {
+    font-family: var(--font-mono); font-weight: 600;
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-400);
+  }
+
+  /* HERO */
+  .stage {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: clamp(36px, 5vw, 96px);
+  }
+
+  .copy { display: flex; flex-direction: column; gap: 36px; min-width: 0; }
+  .kicker {
+    font-family: var(--font-mono); font-weight: 700;
+    font-size: 16px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--teal-700);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(56px, 7vw, 140px);
+    font-weight: 900; line-height: 0.92; letter-spacing: -0.03em;
+    color: var(--ink-900);
+  }
+  h1 .accent { color: var(--teal-700); }
+  .lede {
+    margin: 0;
+    font-size: clamp(20px, 1.8vw, 30px);
+    line-height: 1.45; color: var(--ink-500);
+    max-width: 32ch;
+    font-weight: 400;
+  }
+
+  .steps {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .step {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 20px 22px;
+    background: #fff; border: 1px solid var(--mint-200); border-radius: 16px;
+  }
+  .step-num {
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    background: var(--teal-700); color: #fff;
+    font-family: var(--font-mono); font-weight: 700; font-size: 18px;
+  }
+  .step-title { font-size: 18px; font-weight: 700; color: var(--ink-900); line-height: 1.2; }
+  .step-body { font-family: var(--font-mono); font-size: 13px; color: var(--ink-500); line-height: 1.45; }
+
+  .url-pill {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 16px 22px;
+    background: var(--ink-900); color: var(--mint-100);
+    border-radius: 14px;
+    font-family: var(--font-mono); font-size: 16px;
+    word-break: break-all;
+    align-self: flex-start;
+  }
+  .url-pill .label { color: var(--teal-400); font-weight: 700; flex-shrink: 0; }
+  .url-pill .url { color: #fff; font-weight: 500; }
+
+  /* QR */
+  .qr-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
+    min-width: 0;
+  }
+  .qr-card {
+    background: #fff;
+    padding: clamp(20px, 2.5vw, 36px);
+    border-radius: clamp(20px, 2vw, 28px);
+    border: 1px solid var(--mint-200);
+    box-shadow: 0 24px 64px -28px rgba(12,99,99,0.32);
+  }
+  .qr-card svg {
+    display: block;
+    width: clamp(280px, 32vw, 560px);
+    height: clamp(280px, 32vw, 560px);
+  }
+  .qr-caption { text-align: center; max-width: 380px; }
+  .qr-caption .lbl {
+    font-family: var(--font-mono); font-weight: 700;
+    font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--teal-700);
+    margin-bottom: 8px;
+  }
+  .qr-caption .desc {
+    font-size: 16px; color: var(--ink-500); line-height: 1.45;
+  }
+
+  /* FOOTER */
+  .booth-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid var(--mint-200);
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-400);
+    letter-spacing: 0.04em;
+  }
+  .booth-foot a { color: var(--teal-700); text-decoration: none; font-weight: 600; }
+  .booth-foot a:hover { text-decoration: underline; }
+
+  /* RESPONSIVE */
+  @media (max-width: 960px) {
+    .stage { grid-template-columns: 1fr; gap: 36px; }
+    .qr-wrap { order: -1; }
+    .qr-card svg { width: min(72vw, 420px); height: min(72vw, 420px); }
+    h1 { font-size: clamp(44px, 11vw, 88px); }
+    .lede { font-size: 18px; max-width: none; }
+    .steps { grid-template-columns: 1fr; }
+    .step { flex-direction: row; align-items: center; }
+    .step-num { width: 36px; height: 36px; flex-shrink: 0; }
+    .step-body { display: none; }
+  }
+  @media print {
+    body { background: #fff; }
+    .qr-card { box-shadow: none; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<main class="booth">
+
+  <header class="booth-head">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">FlowLink</div>
+    </div>
+    <div class="booth-meta">Agent-Native · HashKey Chain · id 133</div>
+  </header>
+
+  <section class="stage">
+
+    <div class="copy">
+      <p class="kicker">Scan with any AI agent</p>
+      <h1>Scan it.<br>Your <span class="accent">agent</span> pays.</h1>
+      <p class="lede">
+        No app. No SDK. The agent fetches one markdown file, learns every
+        FlowLink endpoint, and settles on-chain — start to finish.
+      </p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Scan the QR</div>
+            <div class="step-body">resolves to /agent.md</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Agent reads the bundle</div>
+            <div class="step-body">13 specs · ~50 KB · zero parsing</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Pays on HashKey</div>
+            <div class="step-body">SIWE + POST /v1/pay → signed receipt</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARGET URL · displayed -->
+      <div class="url-pill">
+        <span class="label">→</span>
+        <span class="url">https://flowlink.ink/agent.md</span>
+      </div>
+    </div>
+
+    <aside class="qr-wrap">
+      <div class="qr-card">
+        <!-- TARGET URL · encoded · regenerate via curl "https://flowlink.ink/api/qr?text=…&size=720" -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="720" height="720" viewBox="0 0 33 33" shape-rendering="crispEdges" aria-label="QR code linking to https://flowlink.ink/agent.md"><path fill="#ffffff" d="M0 0h33v33H0z"/><path stroke="#0c6363" d="M2 2.5h7m1 0h1m2 0h2m2 0h2m1 0h3m1 0h7M2 3.5h1m5 0h1m1 0h2m1 0h2m1 0h2m2 0h1m3 0h1m5 0h1M2 4.5h1m1 0h3m1 0h1m2 0h2m1 0h4m2 0h2m2 0h1m1 0h3m1 0h1M2 5.5h1m1 0h3m1 0h1m1 0h2m2 0h1m3 0h2m4 0h1m1 0h3m1 0h1M2 6.5h1m1 0h3m1 0h1m3 0h1m1 0h2m3 0h1m1 0h1m2 0h1m1 0h3m1 0h1M2 7.5h1m5 0h1m4 0h1m2 0h1m3 0h3m1 0h1m5 0h1M2 8.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M10 9.5h2m1 0h4m2 0h3M2 10.5h1m1 0h2m1 0h3m3 0h1m1 0h2m1 0h3m3 0h1m2 0h1m1 0h2M2 11.5h1m4 0h1m1 0h2m2 0h2m2 0h5m1 0h4m3 0h1M2 12.5h1m1 0h3m1 0h2m1 0h3m2 0h2m2 0h1m2 0h2m1 0h1m1 0h2M3 13.5h2m4 0h1m1 0h1m1 0h1m1 0h3m6 0h2m4 0h1M5 14.5h4m1 0h1m1 0h1m5 0h2m1 0h1m3 0h1m1 0h2M2 15.5h1m2 0h2m3 0h1m3 0h2m3 0h3m2 0h1m3 0h3M3 16.5h9m1 0h2m1 0h1m3 0h2m3 0h2m1 0h3M2 17.5h3m5 0h2m3 0h1m1 0h1m2 0h3m2 0h1m3 0h1M2 18.5h1m1 0h3m1 0h3m1 0h1m1 0h1m6 0h3m1 0h3m1 0h1M3 19.5h1m6 0h1m4 0h1m3 0h1m2 0h1m2 0h1m1 0h3M2 20.5h1m2 0h1m2 0h4m1 0h1m5 0h1m2 0h1m1 0h1m1 0h1m1 0h1M4 21.5h3m2 0h4m4 0h3m2 0h1m1 0h1m1 0h1m1 0h1M3 22.5h1m2 0h6m1 0h3m1 0h1m1 0h2m1 0h7M10 23.5h2m1 0h1m1 0h3m1 0h2m1 0h1m3 0h5M2 24.5h7m1 0h3m2 0h1m2 0h5m1 0h1m1 0h2m1 0h1M2 25.5h1m5 0h1m1 0h1m2 0h1m4 0h1m1 0h1m1 0h1m3 0h2m1 0h2M2 26.5h1m1 0h3m1 0h1m3 0h3m1 0h2m1 0h1m2 0h5m1 0h1m1 0h1M2 27.5h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h2m1 0h2m3 0h1m1 0h3m1 0h1M2 28.5h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1M2 29.5h1m5 0h1m3 0h3m1 0h1m1 0h1m1 0h1m1 0h3m2 0h1m1 0h1M2 30.5h7m1 0h1m2 0h1m3 0h1m1 0h1m2 0h3m4 0h1"/></svg>
+      </div>
+      <div class="qr-caption">
+        <div class="lbl">For your AI agent</div>
+        <div class="desc">Point any LLM with web access at this QR. It reads the bundle and can transact in seconds.</div>
+      </div>
+    </aside>
+
+  </section>
+
+  <footer class="booth-foot">
+    <span>github.com/Akasxh/flowlink</span>
+    <span><a href="https://flowlink.ink/agent.md">flowlink.ink/agent.md</a></span>
+  </footer>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "AkashKarna662"
+    labels:
+      - "dependencies"
+    groups:
+      typescript:
+        patterns:
+          - "typescript"
+          - "@types/*"
+      biome:
+        patterns:
+          - "@biomejs/*"
+      turbo:
+        patterns:
+          - "turbo"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    labels:
+      - "ci/cd"
+      - "dependencies"

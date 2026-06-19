@@ -1,0 +1,1072 @@
+import { Hono } from "hono";
+
+// ---------------------------------------------------------------------------
+// OpenAPI 3.1 specification — full spec for the ProofLink API
+//
+// Covers all /v1/ endpoints: compliance, invoices, identity, webhooks,
+// analytics. Includes request/response schemas derived from Zod types.
+// ---------------------------------------------------------------------------
+
+const OPENAPI_SPEC = {
+  openapi: "3.1.0",
+  info: {
+    title: "ProofLink API",
+    version: "1.0.0",
+    description:
+      "ProofLink compliance, identity, and invoicing API for autonomous agent payments. " +
+      "Provides sanctions screening, KYA credential issuance, invoice lifecycle management, " +
+      "webhook delivery, and platform analytics.",
+    contact: {
+      name: "ProofLink",
+      url: "https://prooflink.io",
+    },
+    license: {
+      name: "MIT",
+    },
+  },
+  servers: [
+    {
+      url: "{baseUrl}/v1",
+      description: "ProofLink API v1",
+      variables: {
+        baseUrl: {
+          default: "http://localhost:3001",
+          description: "Base URL of the API server",
+        },
+      },
+    },
+  ],
+  security: [{ ApiKeyHeader: [] }, { BearerAuth: [] }],
+  tags: [
+    {
+      name: "Compliance",
+      description: "Compliance checks, sanctions screening, and receipts",
+    },
+    {
+      name: "Invoices",
+      description: "Agent-to-agent invoice management",
+    },
+    {
+      name: "Identity",
+      description: "Agent identity and KYA credential management",
+    },
+    {
+      name: "Webhooks",
+      description: "Webhook registration and management",
+    },
+    {
+      name: "Analytics",
+      description: "Platform analytics and metrics",
+    },
+  ],
+  components: {
+    securitySchemes: {
+      ApiKeyHeader: {
+        type: "apiKey" as const,
+        in: "header" as const,
+        name: "X-API-Key",
+        description: "API key passed via X-API-Key header",
+      },
+      BearerAuth: {
+        type: "http" as const,
+        scheme: "bearer",
+        description:
+          "API key or JWT passed via Authorization: Bearer header",
+      },
+    },
+    schemas: {
+      // ------------------------------------------------------------------
+      // Shared
+      // ------------------------------------------------------------------
+      ErrorResponse: {
+        type: "object",
+        required: ["success", "error"],
+        properties: {
+          success: { type: "boolean", const: false },
+          error: {
+            type: "object",
+            required: ["code", "message"],
+            properties: {
+              code: { type: "string", description: "Machine-readable error code" },
+              message: { type: "string", description: "Human-readable error message" },
+              details: {
+                description: "Validation error details (array of { path, message })",
+              },
+            },
+          },
+        },
+      },
+      Pagination: {
+        type: "object",
+        properties: {
+          page: { type: "integer" },
+          limit: { type: "integer" },
+          total: { type: "integer" },
+          totalPages: { type: "integer" },
+        },
+      },
+
+      // ------------------------------------------------------------------
+      // Compliance
+      // ------------------------------------------------------------------
+      ComplianceParty: {
+        type: "object",
+        required: ["address", "chain"],
+        properties: {
+          address: { type: "string", description: "Wallet address" },
+          chain: { type: "string", description: "CAIP-2 chain identifier" },
+          agentDID: { type: "string", description: "Optional agent DID" },
+        },
+      },
+      ComplianceCheckRequest: {
+        type: "object",
+        required: ["sender", "receiver", "amount", "asset"],
+        properties: {
+          sender: { $ref: "#/components/schemas/ComplianceParty" },
+          receiver: { $ref: "#/components/schemas/ComplianceParty" },
+          amount: { type: "string", description: "Transaction amount (decimal string)" },
+          asset: { type: "string", description: "Token symbol or contract address" },
+          protocol: { type: "string", default: "x402", description: "Payment protocol" },
+        },
+      },
+      CheckPerformed: {
+        type: "object",
+        properties: {
+          checkType: {
+            type: "string",
+            enum: [
+              "SANCTIONS_SCREENING",
+              "KYA_VERIFICATION",
+              "TRAVEL_RULE",
+              "AML_MONITORING",
+              "INVOICE_VALIDATION",
+              "JURISDICTIONAL_RULES",
+            ],
+          },
+          target: { type: "string" },
+          result: { type: "string", enum: ["PASSED", "FAILED", "SKIPPED"] },
+          provider: { type: "string" },
+          performedAt: { type: "string", format: "date-time" },
+          durationMs: { type: "integer" },
+        },
+      },
+      ComplianceCheckResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", const: true },
+          data: {
+            type: "object",
+            properties: {
+              status: { type: "string", enum: ["APPROVED", "REJECTED", "ESCALATED"] },
+              riskScore: { type: "integer", minimum: 0, maximum: 100 },
+              receiptId: { type: "string", format: "uuid" },
+              receiptHash: { type: "string" },
+              checks: { type: "array", items: { $ref: "#/components/schemas/CheckPerformed" } },
+              travelRuleStatus: {
+                type: "string",
+                enum: ["NOT_REQUIRED", "TRANSMITTED", "PENDING", "FAILED", "ACK_RECEIVED"],
+              },
+              totalDurationMs: { type: "integer" },
+              timestamp: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+      ScreenRequest: {
+        type: "object",
+        required: ["address", "chain"],
+        properties: {
+          address: { type: "string", description: "Wallet address to screen" },
+          chain: { type: "string", description: "CAIP-2 chain identifier" },
+          entityName: { type: "string", description: "Optional entity name for enhanced matching" },
+        },
+      },
+      ScreenResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", const: true },
+          data: {
+            type: "object",
+            properties: {
+              address: { type: "string" },
+              chain: { type: "string" },
+              entityName: { type: "string", nullable: true },
+              matched: { type: "boolean" },
+              listsChecked: { type: "array", items: { type: "string" } },
+              matchDetails: { type: "array", items: { type: "object" } },
+              riskScore: { type: "integer", minimum: 0, maximum: 100 },
+              provider: { type: "string" },
+              screenedAt: { type: "string", format: "date-time" },
+            },
+          },
+        },
+      },
+
+      // ------------------------------------------------------------------
+      // Invoices
+      // ------------------------------------------------------------------
+      InvoiceLineItem: {
+        type: "object",
+        required: ["description", "quantity", "unitPrice", "total"],
+        properties: {
+          description: { type: "string" },
+          quantity: { type: "number", exclusiveMinimum: 0 },
+          unit: { type: "string", default: "unit" },
+          unitPrice: { type: "number", minimum: 0 },
+          total: { type: "number", minimum: 0 },
+          serviceCategory: {
+            type: "string",
+            enum: ["compute", "data", "api_call", "content_generation", "analysis", "transaction_fee", "other"],
+          },
+        },
+      },
+      InvoiceParty: {
+        type: "object",
+        required: ["walletAddress"],
+        properties: {
+          agentId: { type: "string" },
+          walletAddress: { type: "string" },
+          legalName: { type: "string" },
+        },
+      },
+      CreateInvoiceRequest: {
+        type: "object",
+        required: ["seller", "buyer", "lineItems", "currency", "totalAmount"],
+        properties: {
+          seller: { $ref: "#/components/schemas/InvoiceParty" },
+          buyer: { $ref: "#/components/schemas/InvoiceParty" },
+          lineItems: {
+            type: "array",
+            items: { $ref: "#/components/schemas/InvoiceLineItem" },
+            minItems: 1,
+          },
+          currency: { type: "string", enum: ["USDC", "USDT", "USD", "EUR", "GBP", "EURC"] },
+          totalAmount: { type: "number", minimum: 0, description: "Must match sum of line item totals" },
+          paymentProtocol: { type: "string", enum: ["x402", "mpp", "ap2", "acp", "direct"] },
+          dueDate: { type: "string", format: "date-time" },
+        },
+      },
+      UpdateInvoiceStateRequest: {
+        type: "object",
+        required: ["state"],
+        properties: {
+          state: {
+            type: "string",
+            enum: ["DRAFT", "ISSUED", "PAID", "SETTLED", "DISPUTED", "CANCELLED"],
+          },
+          reason: { type: "string" },
+        },
+      },
+
+      // ------------------------------------------------------------------
+      // Identity
+      // ------------------------------------------------------------------
+      VerifyAgentRequest: {
+        type: "object",
+        required: ["agentId"],
+        properties: {
+          agentId: { type: "string", description: "Agent identifier (DID or registry ID)" },
+          registryAddress: { type: "string", description: "Optional ERC-8004 registry contract address" },
+          chain: { type: "string", default: "eip155:8453", description: "CAIP-2 chain identifier" },
+        },
+      },
+      VerifyAgentResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", const: true },
+          data: {
+            type: "object",
+            properties: {
+              verified: { type: "boolean" },
+              trustScore: { type: "integer", minimum: 0, maximum: 100 },
+              agentMetadata: {
+                type: "object",
+                nullable: true,
+                properties: {
+                  name: { type: "string" },
+                  type: { type: "string", enum: ["autonomous", "semi-autonomous", "human-supervised"] },
+                  operator: { type: "string" },
+                  registeredAt: { type: "string", format: "date-time" },
+                  walletAddress: { type: "string" },
+                },
+              },
+              operatorStatus: {
+                type: "object",
+                properties: {
+                  sanctionsCleared: { type: "boolean" },
+                  kycVerified: { type: "boolean" },
+                },
+              },
+              delegationScope: { type: "object" },
+            },
+          },
+        },
+      },
+      ControllingEntity: {
+        type: "object",
+        required: ["name", "kybVerified"],
+        properties: {
+          name: { type: "string" },
+          lei: { type: "string" },
+          did: { type: "string" },
+          kybVerified: { type: "boolean" },
+        },
+      },
+      DelegationScope: {
+        type: "object",
+        required: ["maxTransactionValue", "expiresAt"],
+        properties: {
+          maxTransactionValue: { type: "number", minimum: 0 },
+          dailyLimit: { type: "number", minimum: 0 },
+          allowedCounterparties: { type: "array", items: { type: "string" } },
+          blockedJurisdictions: { type: "array", items: { type: "string" } },
+          allowedChains: { type: "array", items: { type: "string" } },
+          allowedCurrencies: { type: "array", items: { type: "string" } },
+          expiresAt: { type: "string", format: "date-time" },
+        },
+      },
+      IssueKYARequest: {
+        type: "object",
+        required: [
+          "agentDid",
+          "agentType",
+          "controllingEntity",
+          "walletAddress",
+          "delegationScope",
+        ],
+        properties: {
+          agentDid: { type: "string" },
+          agentType: { type: "string", enum: ["autonomous", "semi-autonomous", "human-supervised"] },
+          controllingEntity: { $ref: "#/components/schemas/ControllingEntity" },
+          walletAddress: { type: "string" },
+          delegationScope: { $ref: "#/components/schemas/DelegationScope" },
+          erc8004RegistryAddress: { type: "string" },
+          erc8004TokenId: { type: "string" },
+        },
+      },
+
+      // ------------------------------------------------------------------
+      // Webhooks
+      // ------------------------------------------------------------------
+      WebhookRegister: {
+        type: "object",
+        required: ["url", "secret"],
+        properties: {
+          url: { type: "string", format: "uri" },
+          secret: { type: "string", minLength: 16, description: "Signing secret (min 16 chars)" },
+          events: {
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            description: "Event types to subscribe to. Empty = all events.",
+          },
+        },
+      },
+      WebhookUpdate: {
+        type: "object",
+        properties: {
+          url: { type: "string", format: "uri" },
+          events: { type: "array", items: { type: "string" } },
+          active: { type: "boolean" },
+        },
+      },
+      WebhookResponse: {
+        type: "object",
+        properties: {
+          id: { type: "string", format: "uuid" },
+          url: { type: "string", format: "uri" },
+          events: { type: "array", items: { type: "string" } },
+          active: { type: "boolean" },
+          createdAt: { type: "string", format: "date-time" },
+        },
+      },
+    },
+
+    // ------------------------------------------------------------------
+    // Reusable response definitions
+    // ------------------------------------------------------------------
+    responses: {
+      BadRequest: {
+        description: "Validation error",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+          },
+        },
+      },
+      Unauthorized: {
+        description: "Missing or invalid authentication",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+          },
+        },
+      },
+      NotFound: {
+        description: "Resource not found",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+          },
+        },
+      },
+      InternalError: {
+        description: "Internal server error",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+          },
+        },
+      },
+    },
+  },
+
+  // ======================================================================
+  // Paths
+  // ======================================================================
+  paths: {
+    // ------------------------------------------------------------------
+    // Compliance
+    // ------------------------------------------------------------------
+    "/compliance/check": {
+      post: {
+        tags: ["Compliance"],
+        summary: "Run full compliance check",
+        description:
+          "Runs sanctions screening, KYA verification, AML monitoring, travel rule, " +
+          "and jurisdictional checks for a proposed transaction. Returns a compliance " +
+          "receipt that can be attached to settlement.",
+        operationId: "complianceCheck",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ComplianceCheckRequest" },
+            },
+          },
+        },
+        responses: {
+          "201": {
+            description: "Compliance check result with receipt",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ComplianceCheckResponse" },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "500": { $ref: "#/components/responses/InternalError" },
+        },
+      },
+    },
+    "/compliance/screen": {
+      post: {
+        tags: ["Compliance"],
+        summary: "Screen a single address for sanctions",
+        description:
+          "Checks a wallet address against OFAC SDN, EU Consolidated, UN Consolidated, " +
+          "and HMT sanctions lists.",
+        operationId: "complianceScreen",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/ScreenRequest" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Screening result",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ScreenResponse" },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/compliance/receipt/{id}": {
+      get: {
+        tags: ["Compliance"],
+        summary: "Get compliance receipt by ID",
+        operationId: "getComplianceReceipt",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+            description: "Compliance receipt UUID",
+          },
+        ],
+        responses: {
+          "200": { description: "Compliance receipt" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
+    "/compliance/history": {
+      get: {
+        tags: ["Compliance"],
+        summary: "Get compliance check history (paginated)",
+        description: "Returns paginated compliance checks scoped to the calling API key.",
+        operationId: "complianceHistory",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1, minimum: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 20, minimum: 1, maximum: 100 } },
+          {
+            name: "status",
+            in: "query",
+            schema: { type: "string", enum: ["APPROVED", "REJECTED", "ESCALATED"] },
+          },
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated compliance checks",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: {
+                      type: "object",
+                      properties: {
+                        items: { type: "array", items: { type: "object" } },
+                        pagination: { $ref: "#/components/schemas/Pagination" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+
+    // ------------------------------------------------------------------
+    // Invoices
+    // ------------------------------------------------------------------
+    "/invoices": {
+      post: {
+        tags: ["Invoices"],
+        summary: "Create a new invoice",
+        description:
+          "Creates a draft invoice. The totalAmount must match the sum of line item totals.",
+        operationId: "createInvoice",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/CreateInvoiceRequest" },
+            },
+          },
+        },
+        responses: {
+          "201": { description: "Invoice created" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "500": { $ref: "#/components/responses/InternalError" },
+        },
+      },
+      get: {
+        tags: ["Invoices"],
+        summary: "List invoices (paginated, filterable)",
+        operationId: "listInvoices",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1, minimum: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 20, minimum: 1, maximum: 100 } },
+          {
+            name: "state",
+            in: "query",
+            schema: {
+              type: "string",
+              enum: ["DRAFT", "ISSUED", "PAID", "SETTLED", "DISPUTED", "CANCELLED"],
+            },
+          },
+          {
+            name: "currency",
+            in: "query",
+            schema: { type: "string", enum: ["USDC", "USDT", "USD", "EUR", "GBP", "EURC"] },
+          },
+          { name: "seller", in: "query", schema: { type: "string" }, description: "Filter by seller wallet address prefix" },
+          { name: "buyer", in: "query", schema: { type: "string" }, description: "Filter by buyer wallet address prefix" },
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+        ],
+        responses: {
+          "200": {
+            description: "Paginated invoices",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: {
+                      type: "object",
+                      properties: {
+                        items: { type: "array", items: { type: "object" } },
+                        pagination: { $ref: "#/components/schemas/Pagination" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/invoices/{id}": {
+      get: {
+        tags: ["Invoices"],
+        summary: "Get invoice by ID",
+        operationId: "getInvoice",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        responses: {
+          "200": { description: "Invoice details" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
+    "/invoices/{id}/state": {
+      patch: {
+        tags: ["Invoices"],
+        summary: "Update invoice state",
+        description:
+          "Transitions the invoice to a new state. Valid transitions: " +
+          "DRAFT->[ISSUED,CANCELLED], ISSUED->[PAID,DISPUTED,CANCELLED], " +
+          "PAID->[SETTLED,DISPUTED], DISPUTED->[ISSUED,CANCELLED].",
+        operationId: "updateInvoiceState",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/UpdateInvoiceStateRequest" },
+            },
+          },
+        },
+        responses: {
+          "200": { description: "Updated invoice" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+          "422": {
+            description: "Invalid state transition",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
+    },
+
+    // ------------------------------------------------------------------
+    // Identity
+    // ------------------------------------------------------------------
+    "/identity/verify": {
+      post: {
+        tags: ["Identity"],
+        summary: "Verify agent KYA identity",
+        description: "Verifies an agent's KYA credential and returns trust score, metadata, and delegation scope.",
+        operationId: "verifyAgent",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/VerifyAgentRequest" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Verification result",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/VerifyAgentResponse" },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/identity/{agentId}": {
+      get: {
+        tags: ["Identity"],
+        summary: "Get agent identity info",
+        operationId: "getAgentIdentity",
+        parameters: [
+          {
+            name: "agentId",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            description: "Agent DID",
+          },
+        ],
+        responses: {
+          "200": { description: "Agent identity" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
+    "/identity/kya/issue": {
+      post: {
+        tags: ["Identity"],
+        summary: "Issue KYA credential",
+        description:
+          "Issues or re-issues a KYA (Know-Your-Agent) verifiable credential. " +
+          "Creates or updates the agent record and returns a W3C VC-shaped credential.",
+        operationId: "issueKYA",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/IssueKYARequest" },
+            },
+          },
+        },
+        responses: {
+          "201": { description: "KYA credential issued" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "500": { $ref: "#/components/responses/InternalError" },
+        },
+      },
+    },
+
+    // ------------------------------------------------------------------
+    // Webhooks
+    // ------------------------------------------------------------------
+    "/webhooks": {
+      post: {
+        tags: ["Webhooks"],
+        summary: "Register a webhook",
+        operationId: "registerWebhook",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/WebhookRegister" },
+            },
+          },
+        },
+        responses: {
+          "201": {
+            description: "Webhook registered",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: { $ref: "#/components/schemas/WebhookResponse" },
+                  },
+                },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+      get: {
+        tags: ["Webhooks"],
+        summary: "List all webhooks",
+        operationId: "listWebhooks",
+        responses: {
+          "200": {
+            description: "List of webhooks",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/WebhookResponse" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/webhooks/{id}": {
+      put: {
+        tags: ["Webhooks"],
+        summary: "Update a webhook",
+        operationId: "updateWebhook",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/WebhookUpdate" },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Webhook updated",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: { $ref: "#/components/schemas/WebhookResponse" },
+                  },
+                },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+      delete: {
+        tags: ["Webhooks"],
+        summary: "Delete a webhook",
+        operationId: "deleteWebhook",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        responses: {
+          "200": { description: "Webhook deleted" },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
+    "/webhooks/{id}/test": {
+      post: {
+        tags: ["Webhooks"],
+        summary: "Test webhook delivery",
+        description: "Sends a test event to the webhook endpoint and reports delivery status.",
+        operationId: "testWebhook",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string", format: "uuid" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Test delivery result",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", const: true },
+                    data: {
+                      type: "object",
+                      properties: {
+                        delivered: { type: "boolean" },
+                        attempts: { type: "integer" },
+                        lastStatus: { type: "integer", nullable: true },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+        },
+      },
+    },
+
+    // ------------------------------------------------------------------
+    // Analytics
+    // ------------------------------------------------------------------
+    "/analytics/volume": {
+      get: {
+        tags: ["Analytics"],
+        summary: "Transaction volume over time",
+        operationId: "analyticsVolume",
+        parameters: [
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+          {
+            name: "granularity",
+            in: "query",
+            schema: {
+              type: "string",
+              enum: ["hour", "day", "week", "month"],
+              default: "day",
+            },
+          },
+        ],
+        responses: {
+          "200": { description: "Volume data bucketed by time period" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/analytics/compliance": {
+      get: {
+        tags: ["Analytics"],
+        summary: "Compliance decision breakdown",
+        operationId: "analyticsCompliance",
+        parameters: [
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+          {
+            name: "granularity",
+            in: "query",
+            schema: {
+              type: "string",
+              enum: ["hour", "day", "week", "month"],
+              default: "day",
+            },
+          },
+        ],
+        responses: {
+          "200": { description: "Compliance breakdown with percentages" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/analytics/risk": {
+      get: {
+        tags: ["Analytics"],
+        summary: "Risk score distribution",
+        operationId: "analyticsRisk",
+        parameters: [
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+          {
+            name: "granularity",
+            in: "query",
+            schema: {
+              type: "string",
+              enum: ["hour", "day", "week", "month"],
+              default: "day",
+            },
+          },
+        ],
+        responses: {
+          "200": { description: "Risk distribution data with summary stats" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+    "/analytics/agents": {
+      get: {
+        tags: ["Analytics"],
+        summary: "Top agents by volume",
+        operationId: "analyticsAgents",
+        parameters: [
+          {
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", default: 10, minimum: 1, maximum: 100 },
+          },
+          { name: "from", in: "query", schema: { type: "string", format: "date-time" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date-time" } },
+        ],
+        responses: {
+          "200": { description: "Top agents data" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+        },
+      },
+    },
+  },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Routes
+// ---------------------------------------------------------------------------
+
+const openapi = new Hono();
+
+// GET /openapi.json -- OpenAPI spec as JSON
+openapi.get("/openapi.json", (c) => {
+  return c.json(OPENAPI_SPEC, 200);
+});
+
+// GET /docs/openapi.json -- alias under /docs
+openapi.get("/docs/openapi.json", (c) => {
+  return c.json(OPENAPI_SPEC, 200);
+});
+
+// GET /docs -- Swagger UI via CDN
+openapi.get("/docs", (c) => {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProofLink API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" crossorigin></script>
+  <script>
+    SwaggerUIBundle({
+      url: '/openapi.json',
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+      layout: 'BaseLayout',
+    });
+  </script>
+</body>
+</html>`;
+  return c.html(html, 200);
+});
+
+export { openapi, OPENAPI_SPEC };

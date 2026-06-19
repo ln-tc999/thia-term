@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prooflink
+  labels:
+    app.kubernetes.io/name: prooflink
+    app.kubernetes.io/part-of: prooflink

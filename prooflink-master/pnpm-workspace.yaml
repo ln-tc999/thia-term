@@ -1,0 +1,5 @@
+packages:
+  - "packages/*"
+  - "packages/integrations/*"
+  - "apps/*"
+  - "tests/e2e"

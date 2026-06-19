@@ -1,0 +1,46 @@
+{
+  "name": "@prooflink/demo",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "ProofLink hackathon demo — terminal-based compliance showcase",
+  "license": "MIT",
+  "bin": {
+    "prooflink-demo": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc --project tsconfig.json",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "demo:sanctions": "tsx src/index.ts --sanctions",
+    "demo:payment": "tsx src/index.ts --payment",
+    "demo:full": "tsx src/index.ts --full",
+    "demo:kya": "tsx src/index.ts --scenario kya",
+    "demo:travel-rule": "tsx src/index.ts --scenario travel-rule",
+    "demo:multi-chain": "tsx src/index.ts --scenario multi-chain",
+    "demo:batch": "tsx src/index.ts --scenario batch",
+    "demo:invoice": "tsx src/index.ts --scenario invoice",
+    "demo:interactive": "tsx src/index.ts --interactive",
+    "demo:all": "tsx src/index.ts --all",
+    "demo:list": "tsx src/index.ts --list"
+  },
+  "dependencies": {
+    "@prooflink/core": "workspace:*",
+    "@prooflink/shared": "workspace:*",
+    "chalk": "^5.4.0",
+    "cli-table3": "^0.6.5",
+    "ora": "^8.1.0",
+    "prompts": "^2.4.2",
+    "yargs": "^17.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/prompts": "^2.4.9",
+    "@types/yargs": "^17.0.33",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}

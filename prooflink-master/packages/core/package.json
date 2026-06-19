@@ -1,0 +1,45 @@
+{
+  "name": "@prooflink/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "ProofLink compliance decision engine for ProofLink",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./webhooks/manager.js": {
+      "types": "./dist/webhooks/manager.d.ts",
+      "import": "./dist/webhooks/manager.js"
+    },
+    "./webhooks/events.js": {
+      "types": "./dist/webhooks/events.d.ts",
+      "import": "./dist/webhooks/events.js"
+    },
+    "./webhooks/types.js": {
+      "types": "./dist/webhooks/types.d.ts",
+      "import": "./dist/webhooks/types.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@prooflink/shared": "workspace:*",
+    "viem": "^2.27.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
