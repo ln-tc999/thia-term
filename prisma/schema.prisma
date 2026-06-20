@@ -15,6 +15,7 @@ model User {
   emailVerified       DateTime?
   image               String?
   walletAddress       String?           @unique
+  t3nDid              String?           @unique
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   password            String?
@@ -205,6 +206,7 @@ model Agent {
   name                 String
   description          String?
   walletAddress        String?
+  t3nDid               String?
   capabilities         Json        @default("[]")
   status               String      @default("active")
   totalEarned          Float       @default(0)
