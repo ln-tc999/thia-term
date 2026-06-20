@@ -17,7 +17,7 @@ No test framework configured.
 
 ```sh
 cp .env.example .env.local   # then fill in required values
-npx prisma db push
+npx prisma migrate dev       # create + apply migrations from schema changes
 npm run dev
 ```
 
