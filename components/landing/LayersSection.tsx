@@ -31,7 +31,7 @@ const layers = [
     tagStyle: "bg-white/[0.08] text-white/50 border-white/15",
     live: false,
     dim: true,
-    desc: "Agents with verified on-chain history pay each other directly. FlowLink checks agent identity and payment reputation before each transaction — no human approval needed.",
+    desc: "Agents with verified on-chain history pay each other directly. Thia-Term checks agent identity and payment reputation before each transaction — no human approval needed.",
   },
 ]
 
@@ -77,7 +77,7 @@ export function LayersSection() {
         {/* Header */}
         <div className="reveal-item mb-16">
           <p className="text-xs font-mono text-emerald-400/70 tracking-[0.2em] uppercase mb-5">
-            / How FlowLink Scales Compliance
+            / How Thia-Term Scales Compliance
           </p>
           <h2 className="text-5xl md:text-6xl font-light text-white tracking-tight">
             Three Layers
