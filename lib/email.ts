@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM = process.env.RESEND_FROM ?? 'onboarding@resend.dev'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://flowlink.ink'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thia-term.vercel.app'
 
 function baseHtml(body: string) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
@@ -25,11 +25,11 @@ function baseHtml(body: string) {
 </style></head><body>
 <div class="wrap">
   <div class="header">
-    <h1>FlowLink</h1>
+    <h1>Thia-Term</h1>
     <p>Crypto payment infrastructure</p>
   </div>
   <div class="body">${body}</div>
-  <div class="footer">FlowLink · ${APP_URL}</div>
+  <div class="footer">Thia-Term · ${APP_URL}</div>
 </div>
 </body></html>`
 }
@@ -66,7 +66,7 @@ export async function sendInvoicePaidEmail({
       ${paidAt ? `<tr><td>Paid at</td><td>${new Date(paidAt).toLocaleString()}</td></tr>` : ''}
       ${txHash ? `<tr><td>Tx Hash</td><td style="font-family:monospace;font-size:12px;word-break:break-all">${txHash}</td></tr>` : ''}
     </table>
-    <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in FlowLink →</a>
+    <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
   return resend.emails.send({
@@ -104,7 +104,7 @@ export async function sendInvoiceCreatedEmail({
       ${dueAt ? `<tr><td>Due</td><td>${new Date(dueAt).toLocaleDateString()}</td></tr>` : ''}
     </table>
     ${paymentLink ? `<p style="font-size:13px;color:#555;margin-top:12px">Payment link: <a href="${paymentLink}" style="color:#059669">${paymentLink}</a></p>` : ''}
-    <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in FlowLink →</a>
+    <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
   return resend.emails.send({
@@ -132,7 +132,7 @@ export async function sendPaymentReceivedEmail({
 }) {
   const body = `
     <div class="badge">✓ PAYMENT RECEIVED</div>
-    <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:600">You received a payment via FlowLink.</p>
+    <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:600">You received a payment via Thia-Term.</p>
     <table>
       <tr><td>Amount</td><td>${parseFloat(String(amount)).toFixed(2)} ${currency}</td></tr>
       ${network ? `<tr><td>Network</td><td>${network}</td></tr>` : ''}
