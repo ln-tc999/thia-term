@@ -26,7 +26,7 @@ function toCsv(rows: Record<string, unknown>[], headers: string[]): string {
 
 function csvWithHeader(csv: string, type: string, docId: string, accountEmail: string, date: string): string {
   const meta = [
-    `"FlowLink Export — flowlink.ink"`,
+    `"Thia-Term Export — thia-term.vercel.app"`,
     `"Document ID","${docId}"`,
     `"Export Type","${type}"`,
     `"Generated","${date}"`,
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
         payment_link_name: p.paymentLink?.name ?? '',
       }))
 
-      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Payments', docId, userEmail, date), `flowlink-payments-${date}.csv`)
+      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Payments', docId, userEmail, date), `thia-term-payments-${date}.csv`)
     }
 
     if (type === 'invoices') {
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
         payment_link: inv.paymentLinkCode ?? '',
       }))
 
-      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Invoices', docId, userEmail, date), `flowlink-invoices-${date}.csv`)
+      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Invoices', docId, userEmail, date), `thia-term-invoices-${date}.csv`)
     }
 
     if (type === 'payroll') {
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
         }))
       )
 
-      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Payroll', docId, userEmail, date), `flowlink-payroll-${date}.csv`)
+      return csvResponse(csvWithHeader(toCsv(rows, headers), 'Payroll', docId, userEmail, date), `thia-term-payroll-${date}.csv`)
     }
 
     if (type === 'statement') {
@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
       }
 
       const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
-<title>FlowLink Account Statement — ${date}</title>
+<title>Thia-Term Account Statement — ${date}</title>
 <style>
   *{box-sizing:border-box}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f6f9fc;margin:0;padding:0;color:#111}
@@ -347,13 +347,13 @@ export async function GET(request: NextRequest) {
       <div class="verify-box">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         <div>
-          <div style="font-size:11px;font-weight:700;color:#065f46">Verified by FlowLink</div>
+          <div style="font-size:11px;font-weight:700;color:#065f46">Verified by Thia-Term</div>
           <div style="font-size:10px;color:#16a34a;font-family:monospace">${docId}</div>
         </div>
       </div>
     </div>
     <div class="footer-right">
-      flowlink.ink<br>
+      thia-term.vercel.app<br>
       ${new Date().toISOString()}
     </div>
   </div>
