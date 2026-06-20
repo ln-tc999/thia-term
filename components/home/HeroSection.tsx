@@ -132,7 +132,7 @@ export default function HeroSection() {
                   <div className="flex-1 bg-white border border-slate-200 rounded-md px-3 py-1 flex items-center gap-1.5">
                     <Lock className="h-3 w-3 text-slate-400 shrink-0" />
                     <span className="text-xs font-mono font-semibold text-slate-600 truncate">
-                      flowlink.app/pay/ernest-korkua
+                      thia-term.vercel.app/pay/ernest-korkua
                     </span>
                   </div>
                 </div>
