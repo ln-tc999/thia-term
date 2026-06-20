@@ -14,7 +14,7 @@ import '@rainbow-me/rainbowkit/styles.css'
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-project-id'
 
 const config = getDefaultConfig({
-  appName: 'FlowLink - Crypto Payments Platform',
+  appName: 'Thia-Term - Crypto Payments Platform',
   projectId,
   chains: [
     celo,
@@ -55,13 +55,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           appInfo={{
-            appName: 'FlowLink',
-            learnMoreUrl: 'https://flowlink.app',
+            appName: 'Thia-Term',
+            learnMoreUrl: 'https://thia-term.vercel.app',
             disclaimer: ({ Text, Link }) => (
               <Text>
                 By connecting your wallet, you agree to the{' '}
-                <Link href="https://flowlink.app/terms">Terms of Service</Link> and{' '}
-                <Link href="https://flowlink.app/privacy">Privacy Policy</Link>.
+                <Link href="https://thia-term.vercel.app/terms">Terms of Service</Link> and{' '}
+                <Link href="https://thia-term.vercel.app/privacy">Privacy Policy</Link>.
               </Text>
             ),
           }}
