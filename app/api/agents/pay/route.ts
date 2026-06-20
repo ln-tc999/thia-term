@@ -57,10 +57,10 @@ export async function POST(req: Request) {
   let hspMultipayMandateId = agent.hspMultipayMandateId ?? null
   if (!hspMultipayMandateId && hspClient.isConfigured) {
     try {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://flowlink.ink'
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const mandate = await hspClient.createMultiPayMandate({
         merchant_order_id: `agent-${agent.id}`,
-        description: `FlowLink Agent: ${agent.name}`,
+        description: `Thia-Term Agent: ${agent.name}`,
         webhook_url: `${appUrl}/api/webhooks/hsp`,
         redirect_url: `${appUrl}/dashboard`,
       })
