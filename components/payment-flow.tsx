@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { getChain, getToken, isNativeToken } from "@/lib/chains"
-import { FLOWLINK_PAYMENTS_ADDRESS, FLOWLINK_PAYMENTS_ABI, ZERO_ADDRESS } from "@/lib/flowlink-contract"
+import { THIA_TERM_PAYMENTS_ADDRESS, THIA_TERM_PAYMENTS_ABI, ZERO_ADDRESS } from "@/lib/thia-term-contract"
 
 const ERC20_TRANSFER_ABI = [
   {
@@ -203,18 +203,18 @@ export function PaymentFlow({ paymentLink }: PaymentFlowProps) {
       return
     }
 
-    const contractAddress = FLOWLINK_PAYMENTS_ADDRESS[paymentLink.network]
-    const useFlowLinkContract = contractAddress && contractAddress !== ZERO_ADDRESS
+    const contractAddress = THIA_TERM_PAYMENTS_ADDRESS[paymentLink.network]
+    const useContract = contractAddress && contractAddress !== ZERO_ADDRESS
     // bytes32 id derived from the payment link's string id
     const paymentLinkId32 = keccak256(toHex(paymentLink.id))
 
     try {
       if (isNativeToken(token)) {
-        if (useFlowLinkContract) {
-          // Route native HSK through FlowLink contract — emits PaymentProcessed event
+        if (useContract) {
+          // Route native HSK through Thia-Term contract — emits PaymentProcessed event
           writeContract({
             address: contractAddress,
-            abi: FLOWLINK_PAYMENTS_ABI,
+            abi: THIA_TERM_PAYMENTS_ABI,
             functionName: 'payNative',
             args: [paymentLinkId32, paymentLink.recipientAddress as `0x${string}`],
             value: parseEther(amount),
@@ -228,12 +228,12 @@ export function PaymentFlow({ paymentLink }: PaymentFlowProps) {
           })
         }
       } else {
-        if (useFlowLinkContract) {
-          // ERC20 through FlowLink contract: approve first, then pay
+        if (useContract) {
+          // ERC20 through Thia-Term contract: approve first, then pay
           const parsedAmount = parseUnits(amount, token.decimals)
           pendingPay.current = () => writeContract({
             address: contractAddress,
-            abi: FLOWLINK_PAYMENTS_ABI,
+            abi: THIA_TERM_PAYMENTS_ABI,
             functionName: 'pay',
             args: [
               paymentLinkId32,
@@ -283,12 +283,12 @@ export function PaymentFlow({ paymentLink }: PaymentFlowProps) {
       {/* Header */}
       <div className="text-center space-y-1">
         <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 uppercase tracking-widest">
-          <Shield className="h-3.5 w-3.5" /> FlowLink · {targetChain?.name ?? paymentLink.network}
+          <Shield className="h-3.5 w-3.5" /> Thia-Term · {targetChain?.name ?? paymentLink.network}
         </div>
         <h1 className="text-2xl font-bold text-slate-900">
           {paymentLink.name ?? `Pay ${paymentLink.ownerName}`}
         </h1>
-        <p className="text-sm text-slate-500 font-mono">flowlink.app/l/{paymentLink.code}</p>
+        <p className="text-sm text-slate-500 font-mono">thia-term.vercel.app/l/{paymentLink.code}</p>
       </div>
 
       {/* Step: Connect */}
