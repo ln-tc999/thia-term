@@ -72,7 +72,7 @@ export function HeroSection() {
             href="/login"
             className="inline-flex items-center justify-center gap-2 bg-white text-[#1a3530] font-semibold text-sm px-7 py-3.5 rounded-full hover:bg-white/90 transition-all duration-200 shadow-lg shadow-white/10"
           >
-            Try FlowLink
+            Try Thia-Term
           </Link>
           <a
             href="#layers"
