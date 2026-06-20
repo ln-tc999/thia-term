@@ -254,7 +254,7 @@ export function DashboardOverview() {
         <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-6">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-base font-semibold text-white">Get started with FlowLink</h2>
+              <h2 className="text-base font-semibold text-white">Get started with Thia-Term</h2>
               <p className="text-sm text-slate-500 mt-0.5">
                 <span className="text-emerald-400 font-medium">{completedSteps}</span> of 3 steps complete
               </p>
