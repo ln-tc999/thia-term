@@ -28,3 +28,13 @@ next-env.d.ts
 
 # Claude Code worktrees and session data
 .claude/
+
+# Rust TEE contract build artifacts
+contracts/tee/*/target/
+
+# T3 implementation plan and reference docs (local)
+T3-IMPLEMENTATION-PLAN.md
+Terminal3.md
+
+# ESLint config (auto-generated)
+.eslintrc.json
