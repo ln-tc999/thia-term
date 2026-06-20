@@ -1,25 +1,25 @@
-# FlowLink — agent-readable bundle (single file)
+# Thia-Term — agent-readable bundle (single file)
 
 > Compliance-first crypto payments for the agent economy on HashKey Chain (id&nbsp;133).
 > One file. Every skill. No SDK. **Markdown is the API.**
 
-- **Live API base:** `https://flowlink.ink`
+- **Live API base:** `https://app.thia-term.vercel.app`
 - **Settlement chain:** HashKey Chain testnet (id 133)
 - **RPC:** `https://hashkeychain-testnet.alt.technology`
-- **Mirror of:** every file under `https://flowlink.ink/.well-known/` and `https://flowlink.ink/skills/`
+- **Mirror of:** every file under `https://app.thia-term.vercel.app/.well-known/` and `https://app.thia-term.vercel.app/skills/`
 
 If you are an AI agent: read this file top to bottom — you now have the full
-FlowLink contract. No HTML parsing required. Each section below is the verbatim
+Thia-Term contract. No HTML parsing required. Each section below is the verbatim
 canonical markdown from the live site at the URL printed in its heading.
 
 If you are a human: this is the agent-flavoured version. Visit
-`https://flowlink.ink` for the rendered website.
+`https://app.thia-term.vercel.app` for the rendered website.
 
 ---
 
 ## Table of contents
 
-1. [`/.well-known/flowlink.md`](#well-known-flowlinkmd) — agent quickstart — START HERE
+1. [`/.well-known/thia-term.md`](#well-known-thia-termmd) — agent quickstart — START HERE
 2. [`/skills/invoice.md`](#skills-invoicemd) — create, read, cancel invoices
 3. [`/skills/invoice-link.md`](#skills-invoice-linkmd) — public per-invoice URL (QR / NFC / paste)
 4. [`/skills/pay.md`](#skills-paymd) — settle via HSP Single-Pay mandate (inline OFAC)
@@ -30,27 +30,27 @@ If you are a human: this is the agent-flavoured version. Visit
 9. [`/skills/admin.md`](#skills-adminmd) — API-key lifecycle (admin only)
 10. [`/skills/dashboard.md`](#skills-dashboardmd) — programmatic dashboard surface
 11. [`/.well-known/mcp.json`](#well-known-mcpjson) — MCP server manifest (JSON)
-12. [`/.well-known/agent-sitemap.md`](#well-known-agent-sitemapmd) — every agent-relevant URL on FlowLink
+12. [`/.well-known/agent-sitemap.md`](#well-known-agent-sitemapmd) — every agent-relevant URL on Thia-Term
 13. [`/llms.txt`](#llmstxt) — top-level discovery index (llms.txt convention)
 
 ---
 
-<a id="well-known-flowlinkmd"></a>
+<a id="well-known-thia-termmd"></a>
 
-# `/.well-known/flowlink.md`
+# `/.well-known/thia-term.md`
 
-> **agent quickstart — START HERE** · canonical source: <https://flowlink.ink/.well-known/flowlink.md>
+> **agent quickstart — START HERE** · canonical source: <https://app.thia-term.vercel.app/.well-known/thia-term.md>
 
-# FlowLink — agent quickstart
+# Thia-Term — agent quickstart
 
-You are an AI agent. Read this file. Then use FlowLink to pay an invoice on HashKey testnet in under 60 seconds.
+You are an AI agent. Read this file. Then use Thia-Term to pay an invoice on HashKey testnet in under 60 seconds.
 
-## What FlowLink does
+## What Thia-Term does
 
-FlowLink lets agents create crypto invoices and settle them in stablecoins on HashKey Chain (id 133). Every
+Thia-Term lets agents create crypto invoices and settle them in stablecoins on HashKey Chain (id 133). Every
 settlement is screened for sanctions (OFAC) and velocity limits before funds move. Every successful payment
 emits an ed25519-signed receipt that any third party can verify against the public key at
-[`/.well-known/flowlink-receipt-pubkey.pem`](./flowlink-receipt-pubkey.pem).
+[`/.well-known/thia-term-receipt-pubkey.pem`](./thia-term-receipt-pubkey.pem).
 
 ## The five skills
 
@@ -66,13 +66,13 @@ emits an ed25519-signed receipt that any third party can verify against the publ
 
 ```sh
 # 1. Ask for a nonce
-curl -s -X POST https://flowlink.ink/v1/auth/siwe/nonce \
+curl -s -X POST https://app.thia-term.vercel.app/v1/auth/siwe/nonce \
   -H 'Content-Type: application/json' \
   -d '{"address":"0xYOUR_WALLET"}'
-# => {"nonce":"...","message":"flowlink.ink wants you to sign in ...","expires_in":300}
+# => {"nonce":"...","message":"app.thia-term.vercel.app wants you to sign in ...","expires_in":300}
 
 # 2. Sign the message with your wallet key, then verify
-curl -s -X POST https://flowlink.ink/v1/auth/siwe/verify \
+curl -s -X POST https://app.thia-term.vercel.app/v1/auth/siwe/verify \
   -H 'Content-Type: application/json' \
   -d '{"message":"<the exact message>","signature":"0x..."}'
 # => {"access_token":"eyJ...","scopes":["invoice:write","pay:execute",...],"expires_in":3600}
@@ -88,7 +88,7 @@ JWT="eyJ..."                           # from the SIWE step above
 IDEM=$(uuidgen)
 
 # Create an invoice
-INVOICE=$(curl -s -X POST https://flowlink.ink/v1/invoices \
+INVOICE=$(curl -s -X POST https://app.thia-term.vercel.app/v1/invoices \
   -H "Authorization: Bearer $JWT" \
   -H "Idempotency-Key: $IDEM-inv" \
   -H 'Content-Type: application/json' \
@@ -97,7 +97,7 @@ INVOICE=$(curl -s -X POST https://flowlink.ink/v1/invoices \
 INVOICE_ID=$(echo "$INVOICE" | jq -r .invoice_id)
 
 # Pay it
-curl -s -X POST https://flowlink.ink/v1/pay \
+curl -s -X POST https://app.thia-term.vercel.app/v1/pay \
   -H "Authorization: Bearer $JWT" \
   -H "Idempotency-Key: $IDEM-pay" \
   -H 'Content-Type: application/json' \
@@ -106,11 +106,11 @@ curl -s -X POST https://flowlink.ink/v1/pay \
 
 # Wait for settlement (SSE)
 curl -N -H "Authorization: Bearer $JWT" \
-  https://flowlink.ink/v1/transactions/$TXN/events
+  https://app.thia-term.vercel.app/v1/transactions/$TXN/events
 
 # Fetch signed receipt
 curl -s -H "Authorization: Bearer $JWT" \
-  https://flowlink.ink/v1/receipts/$RECEIPT_ID
+  https://app.thia-term.vercel.app/v1/receipts/$RECEIPT_ID
 ```
 
 ## Contract guarantees
@@ -118,7 +118,7 @@ curl -s -H "Authorization: Bearer $JWT" \
 - Every `/v1/*` call requires `Authorization: Bearer` and returns Problem+JSON errors.
 - Every write call requires `Idempotency-Key`; duplicate keys replay the original response.
 - OFAC screening fails **closed** — if our upstream check is unreachable, your pay call is blocked.
-- Receipts are ed25519-signed; verify with the public key at `/.well-known/flowlink-receipt-pubkey.pem`.
+- Receipts are ed25519-signed; verify with the public key at `/.well-known/thia-term-receipt-pubkey.pem`.
 
 ## If anything fails
 
@@ -131,7 +131,7 @@ Every error has a `code` and an `agent_action` field telling you what to do. See
 
 # `/skills/invoice.md`
 
-> **create, read, cancel invoices** · canonical source: <https://flowlink.ink/skills/invoice.md>
+> **create, read, cancel invoices** · canonical source: <https://app.thia-term.vercel.app/skills/invoice.md>
 
 ---
 skill: invoice
@@ -145,7 +145,7 @@ related_skills: [pay, compliance]
 
 # invoice
 
-Create and read FlowLink invoices. An invoice is the canonical object a payer settles against.
+Create and read Thia-Term invoices. An invoice is the canonical object a payer settles against.
 
 ## create_invoice
 
@@ -178,7 +178,7 @@ Idempotency-Key: 01HV9ZBXC8N5KEXAMPLE
   "chain_id": 133,
   "due_at": "2026-05-15T23:59:59Z",
   "created_at": "2026-04-22T14:02:11Z",
-  "flowlink_id": "flowlink:inv/01HV9Z..."
+  "thia-term_id": "thia-term:inv/01HV9Z..."
 }
 ```
 
@@ -236,7 +236,7 @@ Full catalogue: [/skills/errors.md](./errors.md)
 
 # `/skills/invoice-link.md`
 
-> **public per-invoice URL (QR / NFC / paste)** · canonical source: <https://flowlink.ink/skills/invoice-link.md>
+> **public per-invoice URL (QR / NFC / paste)** · canonical source: <https://app.thia-term.vercel.app/skills/invoice-link.md>
 
 ---
 skill: invoice-link
@@ -249,15 +249,15 @@ related_skills: [invoice, pay, compliance, receipt]
 
 # invoice-link
 
-A public, agent-readable view of any FlowLink invoice. Designed to be encoded in QR codes,
+A public, agent-readable view of any Thia-Term invoice. Designed to be encoded in QR codes,
 NFC tags, deep links, or simply pasted into a chat — anywhere a fresh agent needs to
 understand "what is this charge?" without an SDK.
 
 ## URL pattern
 
 ```
-https://flowlink.ink/i/{invoice_id}        # human-friendly HTML page (with QR)
-https://flowlink.ink/i/{invoice_id}/agent  # agent-friendly markdown
+https://app.thia-term.vercel.app/i/{invoice_id}        # human-friendly HTML page (with QR)
+https://app.thia-term.vercel.app/i/{invoice_id}/agent  # agent-friendly markdown
 ```
 
 Same invoice, two representations. The HTML page links the markdown via `<link rel="alternate">`
@@ -270,14 +270,14 @@ and HTTP `Link:` header. Agents can hit either URL.
 3. Parse the YAML frontmatter — that's the canonical machine-readable header:
 
    ```yaml
-   flowlink_invoice_id: inv_01ABC...
+   thia-term_invoice_id: inv_01ABC...
    amount: "10.00"
    token: USDC
    chain_id: 133
    receiver_address: 0x...
    status: pending
    due_at: 2026-05-23T00:00:00Z
-   spec: https://flowlink.ink/skills/pay.md
+   spec: https://app.thia-term.vercel.app/skills/pay.md
    ```
 
 4. Decide whether to pay (compliance checks, user consent, etc.).
@@ -327,7 +327,7 @@ within ~60s. Agents that need real-time settlement should subscribe to
 
 # `/skills/pay.md`
 
-> **settle via HSP Single-Pay mandate (inline OFAC)** · canonical source: <https://flowlink.ink/skills/pay.md>
+> **settle via HSP Single-Pay mandate (inline OFAC)** · canonical source: <https://app.thia-term.vercel.app/skills/pay.md>
 
 ---
 skill: pay
@@ -343,7 +343,7 @@ related_skills: [invoice, compliance, receipt]
 
 # pay
 
-Settle a FlowLink invoice via HashKey Settlement Protocol (HSP) Single-Pay Mandate. Compliance (OFAC +
+Settle a Thia-Term invoice via HashKey Settlement Protocol (HSP) Single-Pay Mandate. Compliance (OFAC +
 velocity) runs inline — if the payer address is sanctioned or exceeds velocity limits, the call is
 rejected before any on-chain activity.
 
@@ -367,7 +367,7 @@ rejected before any on-chain activity.
 
 ```http
 POST /v1/pay HTTP/1.1
-Host: flowlink.ink
+Host: app.thia-term.vercel.app
 Authorization: Bearer <jwt-or-api-key>
 Content-Type: application/json
 Idempotency-Key: 01HV9ZBXC8N5KEXAMPLE
@@ -446,7 +446,7 @@ All errors are returned as `application/problem+json`:
 
 ```json
 {
-  "type": "https://flowlink.ink/errors/compliance_blocked_sanctions",
+  "type": "https://app.thia-term.vercel.app/errors/compliance_blocked_sanctions",
   "title": "Payer address is sanctioned",
   "status": 403,
   "detail": "OFAC SDN match: Tornado Cash",
@@ -469,11 +469,11 @@ All errors are returned as `application/problem+json`:
 ## Copy-paste (bash)
 
 ```sh
-# 1. SIWE auth (see /.well-known/flowlink.md for the signing step)
+# 1. SIWE auth (see /.well-known/thia-term.md for the signing step)
 JWT="eyJ..."
 
 # 2. Pay
-curl -X POST https://flowlink.ink/v1/pay \
+curl -X POST https://app.thia-term.vercel.app/v1/pay \
   -H "Authorization: Bearer $JWT" \
   -H "Idempotency-Key: $(uuidgen)" \
   -H "Content-Type: application/json" \
@@ -492,7 +492,7 @@ curl -X POST https://flowlink.ink/v1/pay \
 
 # `/skills/compliance.md`
 
-> **OFAC + velocity screening (fail-closed)** · canonical source: <https://flowlink.ink/skills/compliance.md>
+> **OFAC + velocity screening (fail-closed)** · canonical source: <https://app.thia-term.vercel.app/skills/compliance.md>
 
 ---
 skill: compliance
@@ -552,7 +552,7 @@ Auth optional. Public endpoint for preflights. Rate-limited per IP when anonymou
 
 ```json
 {
-  "type": "https://flowlink.ink/errors/compliance_blocked_sanctions",
+  "type": "https://app.thia-term.vercel.app/errors/compliance_blocked_sanctions",
   "title": "Address is sanctioned",
   "status": 403,
   "code": "compliance_blocked_sanctions",
@@ -588,7 +588,7 @@ fail unless all addresses fail.
 
 - OFAC SDN Ethereum list (refreshed nightly from `api.ofac.dev`)
 - Known-bad-actor list (Tornado Cash, Lazarus, etc. — hardcoded fallback)
-- FlowLink velocity ledger (24h rolling window, per address)
+- Thia-Term velocity ledger (24h rolling window, per address)
 
 ## Errors
 
@@ -609,7 +609,7 @@ fail unless all addresses fail.
 
 # `/skills/receipt.md`
 
-> **ed25519-signed cryptographic receipts** · canonical source: <https://flowlink.ink/skills/receipt.md>
+> **ed25519-signed cryptographic receipts** · canonical source: <https://app.thia-term.vercel.app/skills/receipt.md>
 
 ---
 skill: receipt
@@ -619,12 +619,12 @@ auth: [siwe, api-key]
 scopes: [receipt:read]
 related_skills: [pay, invoice]
 signing: ed25519
-public_key_url: /.well-known/flowlink-receipt-pubkey.pem
+public_key_url: /.well-known/thia-term-receipt-pubkey.pem
 ---
 
 # receipt
 
-Fetch a cryptographic receipt for a settled transaction. Every receipt is ed25519-signed by FlowLink and
+Fetch a cryptographic receipt for a settled transaction. Every receipt is ed25519-signed by Thia-Term and
 verifiable by any third party against the published public key.
 
 ## get_receipt
@@ -663,11 +663,11 @@ GET /v1/receipts?transaction_id=txn_... HTTP/1.1
   },
   "signature": {
     "algo": "ed25519",
-    "signer": "flowlink.ink",
+    "signer": "app.thia-term.vercel.app",
     "key_id": "flk-receipt-2026-04",
     "signed_payload_hash": "sha256:abc...",
     "signature": "base64:...",
-    "public_key_url": "https://flowlink.ink/.well-known/flowlink-receipt-pubkey.pem"
+    "public_key_url": "https://app.thia-term.vercel.app/.well-known/thia-term-receipt-pubkey.pem"
   }
 }
 ```
@@ -680,7 +680,7 @@ The `signed_payload_hash` is a SHA-256 digest over the canonical JSON of every r
 ```python
 # pseudocode
 import json, hashlib, ed25519
-pub = load_pem("flowlink-receipt-pubkey.pem")
+pub = load_pem("thia-term-receipt-pubkey.pem")
 payload = {k: v for k, v in receipt.items() if k != "signature"}
 canonical = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
 digest = hashlib.sha256(canonical).digest()
@@ -692,7 +692,7 @@ pub.verify(sig, digest)  # raises on mismatch
 
 The current key id is published in the `signature.key_id` field. Old receipts remain verifiable after
 rotation — historical public keys are listed at
-[/.well-known/flowlink-receipt-pubkey.pem](/.well-known/flowlink-receipt-pubkey.pem) with the active key
+[/.well-known/thia-term-receipt-pubkey.pem](/.well-known/thia-term-receipt-pubkey.pem) with the active key
 first and rotated keys after.
 
 ## Errors
@@ -715,7 +715,7 @@ first and rotated keys after.
 
 # `/skills/reputation.md`
 
-> **counterparty trust score from on-chain history** · canonical source: <https://flowlink.ink/skills/reputation.md>
+> **counterparty trust score from on-chain history** · canonical source: <https://app.thia-term.vercel.app/skills/reputation.md>
 
 ---
 skill: reputation
@@ -728,7 +728,7 @@ related_skills: [compliance]
 
 # reputation
 
-Query the portable reputation score of any wallet address. Derived from the history of signed FlowLink
+Query the portable reputation score of any wallet address. Derived from the history of signed Thia-Term
 receipts involving that address — **no self-reporting**.
 
 > **Beta.** Scoring weights may change. The raw fact fields (`tx_count`, `volume_usd`, `first_seen`) are
@@ -760,7 +760,7 @@ No auth required. Public data — a reputation score visible only to the queryer
 }
 ```
 
-**Response 404** — no FlowLink activity found for the address.
+**Response 404** — no Thia-Term activity found for the address.
 
 ## Score factors (current weighting, subject to change)
 
@@ -783,7 +783,7 @@ No auth required. Public data — a reputation score visible only to the queryer
 | code | status | agent should |
 |---|---|---|
 | `validation_error` | 400 | Address not EIP-55 formatted. |
-| `not_found` | 404 | No FlowLink activity for this address yet. |
+| `not_found` | 404 | No Thia-Term activity for this address yet. |
 | `rate_limited` | 429 | Slow down, respect `Retry-After`. |
 
 ## Related
@@ -796,7 +796,7 @@ No auth required. Public data — a reputation score visible only to the queryer
 
 # `/skills/errors.md`
 
-> **RFC 9457 Problem+JSON catalogue** · canonical source: <https://flowlink.ink/skills/errors.md>
+> **RFC 9457 Problem+JSON catalogue** · canonical source: <https://app.thia-term.vercel.app/skills/errors.md>
 
 ---
 skill: errors
@@ -810,7 +810,7 @@ Every `/v1/*` error response is `application/problem+json` (RFC 9457) with these
 
 | field | type | always present | purpose |
 |---|---|---|---|
-| `type` | URL | yes | Link back to this catalogue: `https://flowlink.ink/errors/<code>` |
+| `type` | URL | yes | Link back to this catalogue: `https://app.thia-term.vercel.app/errors/<code>` |
 | `title` | string | yes | Human-readable one-liner |
 | `status` | int | yes | Equals the HTTP status |
 | `code` | string | yes | Machine-readable. Match on this, not `title`. |
@@ -826,7 +826,7 @@ Every `/v1/*` error response is `application/problem+json` (RFC 9457) with these
 
 | code | status | agent action |
 |---|---|---|
-| `auth_required` | 401 | Provide `Authorization: Bearer <token>`. See /.well-known/flowlink.md. |
+| `auth_required` | 401 | Provide `Authorization: Bearer <token>`. See /.well-known/thia-term.md. |
 | `invalid_credentials` | 401 | Token signature invalid or malformed. Re-SIWE. |
 | `token_expired` | 401 | Refresh via `/v1/auth/siwe/refresh` or re-SIWE. |
 | `insufficient_scope` | 403 | Token lacks the required scope. Request a new token. |
@@ -905,7 +905,7 @@ Every `/v1/*` error response is `application/problem+json` (RFC 9457) with these
 
 # `/skills/admin.md`
 
-> **API-key lifecycle (admin only)** · canonical source: <https://flowlink.ink/skills/admin.md>
+> **API-key lifecycle (admin only)** · canonical source: <https://app.thia-term.vercel.app/skills/admin.md>
 
 ---
 skill: admin
@@ -919,7 +919,7 @@ related_skills: [dashboard, errors]
 
 # admin
 
-Raw HTTP contract for FlowLink's admin surface: API-key lifecycle and observability.
+Raw HTTP contract for Thia-Term's admin surface: API-key lifecycle and observability.
 Agent-friendly wrapper: [dashboard](./dashboard.md).
 
 All endpoints live at `/api/admin/*` (internal, not `/v1/*`). All require `X-Admin-Token`.
@@ -1042,7 +1042,7 @@ and scoped JWTs.** Do not expose these endpoints publicly. Do not commit the tok
 ## Copy-paste (bash)
 
 ```sh
-H="X-Admin-Token: $ADMIN_TOKEN"; B=https://flowlink.ink/api/admin
+H="X-Admin-Token: $ADMIN_TOKEN"; B=https://app.thia-term.vercel.app/api/admin
 curl -H "$H" $B/keys
 curl -X POST $B/keys -H "$H" -H "Content-Type: application/json" \
   -d '{"name":"checkout-bot","scopes":["pay:execute"],"env":"test"}'
@@ -1062,7 +1062,7 @@ curl -H "$H" "$B/observability?window=300"
 
 # `/skills/dashboard.md`
 
-> **programmatic dashboard surface** · canonical source: <https://flowlink.ink/skills/dashboard.md>
+> **programmatic dashboard surface** · canonical source: <https://app.thia-term.vercel.app/skills/dashboard.md>
 
 ---
 skill: dashboard
@@ -1183,13 +1183,13 @@ Full catalogue: [/skills/errors.md](./errors.md)
 T="$ADMIN_TOKEN"
 
 # mint
-curl -X POST https://flowlink.ink/api/admin/keys \
+curl -X POST https://app.thia-term.vercel.app/api/admin/keys \
   -H "X-Admin-Token: $T" -H "Content-Type: application/json" \
   -d '{"name":"mcp-bridge","scopes":["invoice:read","receipt:read"],"env":"test"}'
 
 # observe
 curl -H "X-Admin-Token: $T" \
-  "https://flowlink.ink/api/admin/observability?window=300"
+  "https://app.thia-term.vercel.app/api/admin/observability?window=300"
 ```
 
 ## Related
@@ -1203,26 +1203,26 @@ the `/v1/*` surface minted keys authenticate against.
 
 # `/.well-known/mcp.json`
 
-> **MCP server manifest (JSON)** · canonical source: <https://flowlink.ink/.well-known/mcp.json>
+> **MCP server manifest (JSON)** · canonical source: <https://app.thia-term.vercel.app/.well-known/mcp.json>
 
 ```json
 {
   "$schema": "https://modelcontextprotocol.io/schemas/mcp.schema.json",
-  "name": "flowlink",
+  "name": "thia-term",
   "version": "1.0.0",
   "description": "Compliance-first payments for the agent economy on HashKey Chain (id 133). Markdown is the API.",
   "vendor": {
-    "name": "FlowLink",
-    "url": "https://flowlink.ink"
+    "name": "Thia-Term",
+    "url": "https://app.thia-term.vercel.app"
   },
   "servers": [
     {
-      "name": "flowlink-remote",
+      "name": "thia-term-remote",
       "transport": "sse",
-      "url": "https://flowlink.ink/mcp",
+      "url": "https://app.thia-term.vercel.app/mcp",
       "auth": {
         "type": "bearer",
-        "token_url": "https://flowlink.ink/v1/auth/siwe/verify",
+        "token_url": "https://app.thia-term.vercel.app/v1/auth/siwe/verify",
         "scopes": [
           "invoice:read",
           "invoice:write",
@@ -1238,55 +1238,55 @@ the `/v1/*` surface minted keys authenticate against.
     {
       "name": "create_invoice",
       "description": "Create an invoice with a stable invoice_id. See /skills/invoice.md.",
-      "description_url": "https://flowlink.ink/skills/invoice.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/invoice.md"
     },
     {
       "name": "get_invoice",
       "description": "Fetch an invoice by id. See /skills/invoice.md.",
-      "description_url": "https://flowlink.ink/skills/invoice.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/invoice.md"
     },
     {
       "name": "pay_invoice",
       "description": "Settle an invoice via HSP Single-Pay mandate with inline OFAC screening. See /skills/pay.md.",
-      "description_url": "https://flowlink.ink/skills/pay.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/pay.md"
     },
     {
       "name": "check_sanctions",
       "description": "OFAC + velocity screen a wallet address. Fails closed on upstream error. See /skills/compliance.md.",
-      "description_url": "https://flowlink.ink/skills/compliance.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/compliance.md"
     },
     {
       "name": "get_receipt",
       "description": "Fetch an ed25519-signed receipt for a settled transaction. See /skills/receipt.md.",
-      "description_url": "https://flowlink.ink/skills/receipt.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/receipt.md"
     },
     {
       "name": "get_reputation",
       "description": "Query the counterparty reputation score for a wallet address. See /skills/reputation.md.",
-      "description_url": "https://flowlink.ink/skills/reputation.md"
+      "description_url": "https://app.thia-term.vercel.app/skills/reputation.md"
     },
     {
       "name": "list_api_keys",
       "description": "List minted API keys for the local admin user (sanitized \u2014 no raw key, no hash). Dev-only. See /skills/admin.md.",
-      "description_url": "https://flowlink.ink/skills/admin.md",
+      "description_url": "https://app.thia-term.vercel.app/skills/admin.md",
       "admin": true
     },
     {
       "name": "mint_api_key",
       "description": "Create a fresh scoped API key. The raw key is returned ONCE \u2014 persist immediately. Dev-only. See /skills/admin.md.",
-      "description_url": "https://flowlink.ink/skills/admin.md",
+      "description_url": "https://app.thia-term.vercel.app/skills/admin.md",
       "admin": true
     },
     {
       "name": "revoke_api_key",
       "description": "Revoke a previously minted API key by id. Idempotent. Dev-only. See /skills/admin.md.",
-      "description_url": "https://flowlink.ink/skills/admin.md",
+      "description_url": "https://app.thia-term.vercel.app/skills/admin.md",
       "admin": true
     },
     {
       "name": "query_observability",
       "description": "Rolling /v1/* traffic summary: top fingerprints, latency p50/p95, status mix. Dev-only. See /skills/dashboard.md.",
-      "description_url": "https://flowlink.ink/skills/dashboard.md",
+      "description_url": "https://app.thia-term.vercel.app/skills/dashboard.md",
       "admin": true
     }
   ]
@@ -1299,13 +1299,13 @@ the `/v1/*` surface minted keys authenticate against.
 
 # `/.well-known/agent-sitemap.md`
 
-> **every agent-relevant URL on FlowLink** · canonical source: <https://flowlink.ink/.well-known/agent-sitemap.md>
+> **every agent-relevant URL on Thia-Term** · canonical source: <https://app.thia-term.vercel.app/.well-known/agent-sitemap.md>
 
-# FlowLink agent-sitemap
+# Thia-Term agent-sitemap
 
 Human-readable companion to [`/sitemap-agent.json`](/sitemap-agent.json). Same content, grouped by `kind`.
 
-This sitemap exists so an autonomous agent crawling FlowLink does not have to guess what URLs are agent-relevant. Every URL on the site that a reasoning agent might want to fetch — skill specs, manifests, signed signals, page descriptions, human pages, and live API endpoints — is enumerated here with a one-line summary and, where applicable, the address of the agent-flavoured or human-flavoured sibling. Entries are sorted by `kind`, then by `url`, so diffs are deterministic and reviewers can see what was added or removed at a glance.
+This sitemap exists so an autonomous agent crawling Thia-Term does not have to guess what URLs are agent-relevant. Every URL on the site that a reasoning agent might want to fetch — skill specs, manifests, signed signals, page descriptions, human pages, and live API endpoints — is enumerated here with a one-line summary and, where applicable, the address of the agent-flavoured or human-flavoured sibling. Entries are sorted by `kind`, then by `url`, so diffs are deterministic and reviewers can see what was added or removed at a glance.
 
 Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
@@ -1326,18 +1326,18 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
 | URL | Summary | Agent alternate | Human alternate |
 |---|---|---|---|
-| `/.well-known/flowlink.md` | Agent quickstart: pay an invoice on HashKey testnet in under 60 seconds | — | — |
-| `/.well-known/mcp.json` | MCP server manifest advertising FlowLink skills as remote tools | — | — |
+| `/.well-known/thia-term.md` | Agent quickstart: pay an invoice on HashKey testnet in under 60 seconds | — | — |
+| `/.well-known/mcp.json` | MCP server manifest advertising Thia-Term skills as remote tools | — | — |
 | `/.well-known/openapi.yaml` | OpenAPI 3.1 specification for all `/v1/*` endpoints | — | — |
 | `/llms.txt` | Top-level agent discovery index (llms.txt convention) | — | — |
-| `/sitemap-agent.json` | Canonical machine-readable sitemap of every agent-relevant URL on FlowLink | — | `/.well-known/agent-sitemap.md` |
+| `/sitemap-agent.json` | Canonical machine-readable sitemap of every agent-relevant URL on Thia-Term | — | `/.well-known/agent-sitemap.md` |
 
 ## signal
 
 | URL | Summary | Agent alternate | Human alternate |
 |---|---|---|---|
 | `/.well-known/agent-sitemap.md` | Human-readable companion to `sitemap-agent.json` (markdown table grouped by kind) | `/sitemap-agent.json` | — |
-| `/.well-known/flowlink-receipt-pubkey.pem` | ed25519 public key used to verify FlowLink settlement receipts | — | — |
+| `/.well-known/thia-term-receipt-pubkey.pem` | ed25519 public key used to verify Thia-Term settlement receipts | — | — |
 | `/.well-known/jwks.json` | JWKS for verifying SIWE-derived session bearer tokens | — | — |
 | `/robots.txt` | Crawler policy: explicitly allows GPTBot, ClaudeBot, Claude-Web, anthropic-ai, Google-Extended, PerplexityBot | — | — |
 
@@ -1352,7 +1352,7 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
 | URL | Summary | Agent alternate | Human alternate |
 |---|---|---|---|
-| `/` | Marketing landing page describing FlowLink and the agent-payments thesis | `/llms.txt` | — |
+| `/` | Marketing landing page describing Thia-Term and the agent-payments thesis | `/llms.txt` | — |
 | `/dashboard` | Human dashboard root (overview + nav into keys, agents, settings) | `/skills/dashboard.md` | — |
 | `/dashboard/agents` | Human UI for live observability of agent traffic per key fingerprint | `/skills/dashboard.md` | — |
 | `/dashboard/keys` | Human UI for minting and revoking API keys | `/skills/dashboard.md` | — |
@@ -1364,7 +1364,7 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 | `/api/admin/keys` | Admin: mint, list, and revoke API keys (admin token required) | `/skills/admin.md` | `/dashboard/keys` |
 | `/api/admin/observability` | Admin: aggregate per-key request volume, latency, and error stats | `/skills/admin.md` | `/dashboard/agents` |
 | `/api/webhooks/hsp` | Inbound HSP settlement callback (signed by HashKey, verified server-side) | — | — |
-| `/mcp` | MCP SSE endpoint exposing FlowLink skills as remote tools (bearer auth) | `/.well-known/mcp.json` | — |
+| `/mcp` | MCP SSE endpoint exposing Thia-Term skills as remote tools (bearer auth) | `/.well-known/mcp.json` | — |
 | `/v1/auth/siwe/nonce` | Mint a single-use EIP-4361 nonce for Sign-In-With-Ethereum | — | — |
 | `/v1/auth/siwe/verify` | Verify a signed SIWE message and exchange it for a session bearer token | — | — |
 | `/v1/auth/whoami` | Return the caller identity (address or key fingerprint) and active scopes | — | — |
@@ -1384,28 +1384,28 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
 # `/llms.txt`
 
-> **top-level discovery index (llms.txt convention)** · canonical source: <https://flowlink.ink/llms.txt>
+> **top-level discovery index (llms.txt convention)** · canonical source: <https://app.thia-term.vercel.app/llms.txt>
 
-# FlowLink
+# Thia-Term
 
 > Compliance-first payment layer for the agent economy on HashKey Chain (id 133).
 > No SDK. Wallet signature (SIWE) or scoped API key for write access. Receipts are ed25519-signed.
 
 ## Start here
 
-- Agent quickstart: https://flowlink.ink/.well-known/flowlink.md
-- Agent sitemap:    https://flowlink.ink/sitemap-agent.json
-- MCP manifest:     https://flowlink.ink/.well-known/mcp.json
+- Agent quickstart: https://app.thia-term.vercel.app/.well-known/thia-term.md
+- Agent sitemap:    https://app.thia-term.vercel.app/sitemap-agent.json
+- MCP manifest:     https://app.thia-term.vercel.app/.well-known/mcp.json
 - OpenAPI 3.1:      (ships in v0.2 — for now use the skill files below)
 
 ## Skills
 
-- [invoice](https://flowlink.ink/skills/invoice.md) — create, read, cancel invoices
-- [invoice-link](https://flowlink.ink/skills/invoice-link.md) — public per-invoice URL agents read from QR / NFC / paste
-- [pay](https://flowlink.ink/skills/pay.md) — settle an invoice via HSP Single-Pay mandate
-- [compliance](https://flowlink.ink/skills/compliance.md) — OFAC + velocity screening
-- [receipt](https://flowlink.ink/skills/receipt.md) — cryptographic proof of settlement
-- [reputation](https://flowlink.ink/skills/reputation.md) — counterparty trust score
+- [invoice](https://app.thia-term.vercel.app/skills/invoice.md) — create, read, cancel invoices
+- [invoice-link](https://app.thia-term.vercel.app/skills/invoice-link.md) — public per-invoice URL agents read from QR / NFC / paste
+- [pay](https://app.thia-term.vercel.app/skills/pay.md) — settle an invoice via HSP Single-Pay mandate
+- [compliance](https://app.thia-term.vercel.app/skills/compliance.md) — OFAC + velocity screening
+- [receipt](https://app.thia-term.vercel.app/skills/receipt.md) — cryptographic proof of settlement
+- [reputation](https://app.thia-term.vercel.app/skills/reputation.md) — counterparty trust score
 
 ## Auth
 
@@ -1415,7 +1415,7 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
 ## Conventions
 
-- Base URL: https://flowlink.ink
+- Base URL: https://app.thia-term.vercel.app
 - Errors: RFC 9457 Problem+JSON, every error has `code` and `agent_action`
 - Idempotency: required on POST/PUT/DELETE, `Idempotency-Key` header, 24h replay window
 - Rate limits: surfaced in `X-RateLimit-*` headers, `Retry-After` on 429
@@ -1423,7 +1423,7 @@ Generated: `2026-04-22T00:00:00Z` (schema version 1.0.0)
 
 ## Error catalogue
 
-https://flowlink.ink/skills/errors.md
+https://app.thia-term.vercel.app/skills/errors.md
 
 ## Settlement chain
 
@@ -1436,7 +1436,7 @@ HashKey Chain testnet, chain id 133. RPC: https://hashkeychain-testnet.alt.techn
 | URL                                  | What it returns                                          |
 |--------------------------------------|----------------------------------------------------------|
 | `GET /llms.txt`                      | top-level llms.txt index (plain text)                    |
-| `GET /.well-known/flowlink.md`       | agent quickstart in markdown                             |
+| `GET /.well-known/thia-term.md`       | agent quickstart in markdown                             |
 | `GET /.well-known/mcp.json`          | MCP server manifest                                      |
 | `GET /.well-known/agent-sitemap.md`  | every agent-relevant URL grouped by kind                 |
 | `GET /.well-known/openapi.yaml`      | OpenAPI 3.1 for every `/v1/*` endpoint                   |
@@ -1449,18 +1449,18 @@ HashKey Chain testnet, chain id 133. RPC: https://hashkeychain-testnet.alt.techn
 
 ```bash
 # 1. SIWE: ask for a nonce
-curl -s -X POST https://flowlink.ink/v1/auth/siwe/nonce \
+curl -s -X POST https://app.thia-term.vercel.app/v1/auth/siwe/nonce \
   -H 'Content-Type: application/json' \
   -d '{"address":"0xYOUR_WALLET"}'
 
 # 2. Sign the returned message with the wallet, then exchange for a JWT
-curl -s -X POST https://flowlink.ink/v1/auth/siwe/verify \
+curl -s -X POST https://app.thia-term.vercel.app/v1/auth/siwe/verify \
   -H 'Content-Type: application/json' \
   -d '{"message":"<exact message>","signature":"0x..."}'
 # => {"access_token":"eyJ...","scopes":[...],"expires_in":3600}
 
 # 3. Use the JWT on every /v1/* call
-curl https://flowlink.ink/v1/auth/whoami -H "Authorization: Bearer <jwt>"
+curl https://app.thia-term.vercel.app/v1/auth/whoami -H "Authorization: Bearer <jwt>"
 ```
 
 For dev-only, mint a scoped API key at `/dashboard/keys` and send it as
@@ -1468,4 +1468,4 @@ For dev-only, mint a scoped API key at `/dashboard/keys` and send it as
 
 ---
 
-*Generated bundle. MIT licence. Source: <https://github.com/Akasxh/flowlink>*
+*Generated bundle. MIT licence. Source: <https://github.com/Akasxh/thia-term>*
