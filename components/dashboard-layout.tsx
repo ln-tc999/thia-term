@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
-  Shield, Users, Bell,
+  Shield, ShieldCheck, Users, Bell,
   LogOut, Wallet, X, Link2,
   LayoutDashboard, FileText, Send, Settings, Camera, Loader2,
   CreditCard, AlertCircle
@@ -17,6 +17,7 @@ import { ComplianceVaultsModule } from "@/components/compliance-vaults-module"
 import { PayrollRailsModule } from "@/components/payroll-rails-module"
 import { AIInvoiceModule } from "@/components/ai-invoice-module"
 import { SettingsModule } from "@/components/settings-module"
+import { VendorsModule } from "@/components/vendors-module"
 import { WalletSetupModal } from "@/components/wallet-setup-modal"
 import { WalletOnboardingModal } from "@/components/wallet-onboarding-modal"
 import { useSession, signOut } from "next-auth/react"
@@ -173,6 +174,7 @@ const navigation = [
   { id: "ai-invoices", name: "Invoicing", icon: FileText, badge: "AI" },
   { id: "payroll-rails", name: "Payroll", icon: Users },
   { id: "compliance-vaults", name: "Vaults", icon: Shield },
+  { id: "vendor-verify", name: "VendorVerify", icon: ShieldCheck, badge: "T3" },
   { id: "settings", name: "Settings", icon: Settings },
 ]
 
@@ -475,6 +477,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       case "compliance-vaults": return <ComplianceVaultsModule />
       case "payroll-rails": return <PayrollRailsModule />
       case "ai-invoices": return <AIInvoiceModule />
+      case "vendor-verify": return <VendorsModule />
       case "settings": return <SettingsModule />
       default: return children
     }
