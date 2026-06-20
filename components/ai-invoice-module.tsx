@@ -850,7 +850,7 @@ export function AIInvoiceModule() {
   @media print{.no-print{display:none}}
 </style>
 </head><body>
-<h1 style="color:#059669">FlowLink</h1>
+<h1 style="color:#059669">Thia-Term</h1>
 <div class="badge">✓ PAID</div>
 <hr class="divider">
 <p><strong>Invoice #:</strong> ${inv.invoiceNumber}</p>
@@ -860,7 +860,7 @@ ${inv.paidAt ? `<p><strong>Paid:</strong> ${new Date(inv.paidAt).toLocaleDateStr
 <p><strong>Network:</strong> ${inv.network} &nbsp;·&nbsp; <strong>Token:</strong> ${inv.currency}</p>
 ${itemRows ? `<table><thead><tr><th>Description</th><th style="text-align:center">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Total</th></tr></thead><tbody>${itemRows}</tbody></table>` : ""}
 <div class="total">Total Paid: ${parseFloat(String(inv.amount)).toFixed(2)} ${inv.currency}</div>
-${inv.txHash ? `<p class="footer">Transaction: ${inv.txHash}<br>Verified on HashKey Chain · flowlink.ink</p>` : ""}
+${inv.txHash ? `<p class="footer">Transaction: ${inv.txHash}<br>Verified on HashKey Chain · thia-term.vercel.app</p>` : ""}
 <button class="no-print" onclick="window.print()" style="margin-top:28px;padding:10px 24px;background:#059669;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600">Print / Save as PDF</button>
 <script>window.onload = function(){ window.print(); }</script>
 </body></html>`
