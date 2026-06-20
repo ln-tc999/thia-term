@@ -1,6 +1,10 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  const key = process.env.RESEND_API_KEY
+  if (!key) throw new Error('Missing RESEND_API_KEY')
+  return new Resend(key)
+}
 
 const FROM = process.env.RESEND_FROM ?? 'onboarding@resend.dev'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://thia-term.vercel.app'
@@ -69,7 +73,7 @@ export async function sendInvoicePaidEmail({
     <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: toEmail,
     subject: `✓ Invoice ${invoiceNumber} paid — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
@@ -107,7 +111,7 @@ export async function sendInvoiceCreatedEmail({
     <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: toEmail,
     subject: `Invoice ${invoiceNumber} created — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
@@ -142,7 +146,7 @@ export async function sendPaymentReceivedEmail({
     <a href="${APP_URL}/dashboard" class="btn">View Dashboard →</a>
   `
 
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to: toEmail,
     subject: `💰 Payment received — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
