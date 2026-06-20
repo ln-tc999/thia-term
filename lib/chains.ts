@@ -1,4 +1,4 @@
-// Multi-chain registry for FlowLink
+// Multi-chain registry for Thia-Term
 // Add new chains here and they propagate everywhere automatically
 
 export interface ChainToken {
