@@ -35,14 +35,14 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group" onClick={closeMenu}>
           <Image
-            src="/flowlink-logo-final.png"
-            alt="FlowLink"
+            src="/thia-term-logo.png"
+            alt="Thia-Term"
             width={36}
             height={36}
             className="rounded-xl opacity-95 group-hover:opacity-100 transition-opacity"
             priority
           />
-          <span className="font-semibold text-white text-lg leading-none">FlowLink</span>
+          <span className="font-semibold text-white text-lg leading-none">Thia-Term</span>
         </Link>
 
         {/* Desktop nav links */}
