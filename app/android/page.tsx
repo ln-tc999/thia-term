@@ -22,7 +22,7 @@ export default function AndroidComingSoon() {
     setSubmitting(false)
     setEmail('')
     toast.success("You're on the list!", {
-      description: "We'll notify you when the FlowLink mobile app launches.",
+      description: "We'll notify you when the Thia-Term mobile app launches.",
     })
   }
 
@@ -43,7 +43,7 @@ export default function AndroidComingSoon() {
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 border-b border-white/5">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/flowlink-logo-final.png" alt="FlowLink" width={120} height={32} className="h-7 w-auto" />
+          <Image src="/thia-term-logo.png" alt="Thia-Term" width={120} height={32} className="h-7 w-auto" />
         </Link>
         <Button asChild variant="ghost" size="sm" className="text-slate-400 hover:text-white">
           <Link href="/">
@@ -78,7 +78,7 @@ export default function AndroidComingSoon() {
             <span className="text-emerald-400">Launching Soon</span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed mb-10">
-            Take FlowLink on the go. Create payment links, track compliance, and manage crypto payments from your phone — available on iOS and Android.
+            Take Thia-Term on the go. Create payment links, track compliance, and manage crypto payments from your phone — available on iOS and Android.
           </p>
 
           {/* Feature pills */}
@@ -119,7 +119,7 @@ export default function AndroidComingSoon() {
 
       {/* Footer */}
       <div className="relative z-10 text-center py-6 border-t border-white/5 text-xs text-slate-600">
-        © {new Date().getFullYear()} FlowLink · Built on HashKey Chain
+        © {new Date().getFullYear()} Thia-Term · Built on HashKey Chain
       </div>
     </div>
   )
