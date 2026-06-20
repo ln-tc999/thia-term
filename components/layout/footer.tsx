@@ -12,9 +12,9 @@ export default function Footer() {
           {/* Brand col — spans 2 */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <img src="/flowlink-logo-final.png" alt="FlowLink" className="w-8 h-8 rounded-xl object-cover" />
+              <img src="/thia-term-logo.png" alt="Thia-Term" className="w-8 h-8 rounded-xl object-cover" />
               <span className="font-bold text-lg">
-                <span className="text-slate-900">Flow</span><span className="text-emerald-600">Link</span>
+                <span className="text-slate-900">Thia</span><span className="text-emerald-600">-Term</span>
               </span>
             </Link>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
@@ -87,20 +87,16 @@ export default function Footer() {
               <span className="text-slate-900 font-semibold text-sm">Beta Android App</span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">Beta</span>
             </div>
-            <p className="text-sm text-slate-500">Try FlowLink on mobile — early access to compliant crypto payments on the go.</p>
+            <p className="text-sm text-slate-500">Try Thia-Term on mobile — early access to compliant crypto payments on the go.</p>
           </div>
-          <a
-            href="/flowlink-android-app.apk"
-            download="FlowLink-Android-App.apk"
-            className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors"
-          >
-            Download APK
-          </a>
+          <span className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-slate-200 text-slate-400 text-sm font-semibold rounded-xl cursor-not-allowed">
+            APK unavailable
+          </span>
         </div>
 
         {/* Bottom bar */}
         <div className="border-t border-slate-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-slate-500">© 2025 FlowLink. All rights reserved.</p>
+          <p className="text-sm text-slate-500">© 2025 Thia-Term. All rights reserved.</p>
           <div className="flex items-center gap-6">
             {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((l) => (
               <Link key={l} href="#" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">{l}</Link>
