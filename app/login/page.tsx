@@ -80,7 +80,7 @@ export default function LoginPage() {
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement: "Sign in to FlowLink",
+        statement: "Sign in to Thia-Term",
         uri: window.location.origin,
         version: "1",
         chainId: chain?.id ?? 133,
@@ -101,9 +101,9 @@ export default function LoginPage() {
       {/* Top nav — same as landing */}
       <header className="border-b border-slate-100 px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/flowlink-logo-final.png" alt="FlowLink" className="w-9 h-9 rounded-xl object-cover" />
+          <img src="/thia-term-logo.png" alt="Thia-Term" className="w-9 h-9 rounded-xl object-cover" />
           <span className="font-bold text-xl tracking-tight">
-            <span className="text-slate-900">Flow</span><span className="text-emerald-600">Link</span>
+            <span className="text-slate-900">Thia</span><span className="text-emerald-600">-Term</span>
           </span>
         </Link>
         <Link href="/" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
@@ -159,7 +159,7 @@ export default function LoginPage() {
               </h1>
               <p className="text-slate-500 mt-1">
                 {mode === "login"
-                  ? "Sign in to your FlowLink account"
+                  ? "Sign in to your Thia-Term account"
                   : "Get started with compliant crypto payments"}
               </p>
             </div>
