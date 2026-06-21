@@ -27,7 +27,7 @@ const steps = [
           </div>
           <div className="flex items-center justify-between py-3">
             <span className="text-white/50 text-sm">Network</span>
-            <span className="text-white text-sm font-medium">HashKey Chain</span>
+            <span className="text-white text-sm font-medium">T3N</span>
           </div>
         </div>
       ),
@@ -87,7 +87,7 @@ const steps = [
           </div>
           <div className="w-full rounded-xl bg-white/[0.03] border border-white/8 px-4 py-3 mt-2">
             <p className="text-xs font-mono text-white/30 text-center truncate">
-              0x7a3f...4e9c · HashKey Chain
+              0x7a3f...4e9c · T3N
             </p>
           </div>
         </div>
