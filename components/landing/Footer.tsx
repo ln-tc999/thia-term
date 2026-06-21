@@ -10,8 +10,8 @@ export function Footer() {
         <Link href="/" className="flex items-center gap-2 group">
           <img src="/thia-term-logo.png" alt="Thia-Term" className="w-8 h-8 rounded-lg object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
           <span className="font-bold text-sm tracking-tight">
-            <span className="text-white">Flow</span>
-            <span className="text-emerald-400">Link</span>
+            <span className="text-white">Thia</span>
+            <span className="text-emerald-400">Term</span>
           </span>
         </Link>
 
