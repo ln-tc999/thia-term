@@ -4,14 +4,11 @@ import { useState, useEffect } from "react"
 import { ShaderBackground } from "@/components/landing/ShaderBackground"
 import { signIn, useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useAccount, useSignMessage } from "wagmi"
-import { SiweMessage } from "siwe"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import {
-  Shield, Wallet, ArrowRight, Chrome, Loader2, Mail,
+  Shield, Chrome, Loader2, Mail,
   UserCheck, Ban, FileCheck, CheckCircle, Lock,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -20,18 +17,15 @@ import Link from "next/link"
 export default function LoginPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
-  const { address, isConnected, chain } = useAccount()
-  const { signMessageAsync } = useSignMessage()
 
   useEffect(() => {
     if (status === "authenticated") router.replace("/dashboard")
   }, [status, router])
 
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [walletLoading, setWalletLoading] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [mode, setMode] = useState<"login" | "register">("login")
-  const [tab, setTab] = useState<"email" | "google" | "wallet">("email")
+  const [tab, setTab] = useState<"email" | "google">("email")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -69,30 +63,6 @@ export default function LoginPage() {
         else toast.error("Invalid email or password")
       } finally { setEmailLoading(false) }
     }
-  }
-
-  const handleWalletSignIn = async () => {
-    if (!isConnected || !address) { toast.error("Connect your wallet first"); return }
-    try {
-      setWalletLoading(true)
-      const nonceRes = await fetch("/api/auth/nonce")
-      const { nonce } = await nonceRes.json()
-      const message = new SiweMessage({
-        domain: window.location.host,
-        address,
-        statement: "Sign in to Thia-Term",
-        uri: window.location.origin,
-        version: "1",
-        chainId: chain?.id ?? 133,
-        nonce,
-      })
-      const signature = await signMessageAsync({ message: message.prepareMessage() })
-      const result = await signIn("siwe", { message: JSON.stringify(message), signature, redirect: false, callbackUrl: "/dashboard" })
-      if (result?.ok) router.push("/dashboard")
-      else toast.error("Wallet sign-in failed")
-    } catch (err: any) {
-      toast.error(err?.code === 4001 ? "Signature rejected" : "Something went wrong")
-    } finally { setWalletLoading(false) }
   }
 
   return (
@@ -166,7 +136,7 @@ export default function LoginPage() {
 
             {/* Method tabs */}
             <div className="flex gap-1 p-1 bg-slate-100 rounded-xl mb-6">
-              {(["email", "google", "wallet"] as const).map(t => (
+              {(["email", "google"] as const).map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
@@ -232,24 +202,6 @@ export default function LoginPage() {
                   {googleLoading ? "Redirecting…" : "Continue with Google"}
                 </Button>
                 <p className="text-xs text-center text-slate-400">A new account is created automatically on first sign-in.</p>
-              </div>
-            )}
-
-            {/* Wallet tab */}
-            {tab === "wallet" && (
-              <div className="space-y-4">
-                <div className="flex justify-center">
-                  <ConnectButton label="Connect Wallet" accountStatus="address" showBalance={false} />
-                </div>
-                {isConnected && address && (
-                  <Button onClick={handleWalletSignIn} disabled={walletLoading}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-11 font-semibold" size="lg">
-                    {walletLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wallet className="mr-2 h-4 w-4" />}
-                    {walletLoading ? "Signing…" : "Sign in with Wallet"}
-                    {!walletLoading && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </Button>
-                )}
-                <p className="text-xs text-center text-slate-400">Sign a message to verify wallet ownership. No gas required.</p>
               </div>
             )}
 
