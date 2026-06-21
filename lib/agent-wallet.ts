@@ -1,15 +1,15 @@
 import { HDKey } from '@scure/bip32'
 import { mnemonicToSeedSync } from '@scure/bip39'
-import { privateKeyToAccount } from 'viem/accounts'
-import { createWalletClient, createPublicClient, http, parseUnits, parseAbi, parseEther, formatEther } from 'viem'
-import { hashkey } from 'viem/chains'
+import { secp256k1 } from '@noble/curves/secp256k1'
+import { keccak_256 } from '@noble/hashes/sha3'
+import { bytesToHex, hexToBytes } from '@noble/hashes/utils'
 
-const RPC = process.env.NEXT_PUBLIC_HASHKEY_MAINNET_RPC || 'https://mainnet.hsk.xyz'
-
-// Minimum HSK balance an agent wallet must hold to cover gas
-const GAS_THRESHOLD = parseEther('0.005')
-// Amount sent from deployer when agent balance is below threshold
-const GAS_TOP_UP = parseEther('0.01')
+function privateKeyToAddress(privateKey: `0x${string}`): `0x${string}` {
+  const pk = hexToBytes(privateKey.slice(2))
+  const pubKey = secp256k1.getPublicKey(pk, false)
+  const hash = keccak_256(pubKey.slice(1))
+  return `0x${bytesToHex(hash.slice(-20))}` as `0x${string}`
+}
 
 export function deriveAgentWallet(agentIndex: number) {
   const mnemonic = process.env.DEPLOYER_MNEMONIC
@@ -17,49 +17,19 @@ export function deriveAgentWallet(agentIndex: number) {
   const seed = mnemonicToSeedSync(mnemonic)
   const hdKey = HDKey.fromMasterSeed(seed)
   const child = hdKey.derive(`m/44'/60'/0'/0/${agentIndex}`)
-  const privateKey = `0x${Buffer.from(child.privateKey!).toString('hex')}` as `0x${string}`
-  const account = privateKeyToAccount(privateKey)
-  return { account, privateKey, address: account.address }
+  const privateKey = `0x${bytesToHex(child.privateKey!)}` as `0x${string}`
+  const address = privateKeyToAddress(privateKey)
+  return { privateKey, address }
 }
 
-export function getAgentWalletClient(agentIndex: number) {
-  const { account } = deriveAgentWallet(agentIndex)
-  return createWalletClient({
-    account,
-    chain: hashkey,
-    transport: http(RPC),
-  })
-}
-
-export function getPublicClient() {
-  return createPublicClient({
-    chain: hashkey,
-    transport: http(RPC),
-  })
-}
-
-// Funds the agent wallet from the deployer if balance is below GAS_THRESHOLD.
-// Silent no-op if DEPLOYER_PRIVATE_KEY is not set.
+/**
+ * T3N-based agent payment — currently a stub.
+ * Will be replaced with TenantClient.executeBusinessContract().
+ */
 export async function fundAgentIfNeeded(agentAddress: `0x${string}`): Promise<void> {
-  const deployerKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}` | undefined
-  if (!deployerKey) return
-
-  const publicClient = getPublicClient()
-  const balance = await publicClient.getBalance({ address: agentAddress })
-  if (balance >= GAS_THRESHOLD) return
-
-  const deployer = privateKeyToAccount(deployerKey)
-  const deployerClient = createWalletClient({ account: deployer, chain: hashkey, transport: http(RPC) })
-
-  console.log(`[agent-wallet] Funding ${agentAddress} with ${formatEther(GAS_TOP_UP)} HSK for gas`)
-  await deployerClient.sendTransaction({ to: agentAddress, value: GAS_TOP_UP })
+  if (!process.env.T3N_API_KEY) return
+  // TODO: T3N gas funding via TenantClient
 }
-
-export const ERC20_ABI = parseAbi([
-  'function transfer(address to, uint256 amount) returns (bool)',
-  'function balanceOf(address) view returns (uint256)',
-  'function decimals() view returns (uint8)',
-])
 
 export async function agentSendERC20(
   agentIndex: number,
@@ -67,25 +37,8 @@ export async function agentSendERC20(
   toAddress: `0x${string}`,
   amountHuman: number
 ): Promise<{ txHash: string; success: boolean; error?: string }> {
-  try {
-    const client = getAgentWalletClient(agentIndex)
-    const publicClient = getPublicClient()
-    const decimals = await publicClient.readContract({
-      address: tokenAddress,
-      abi: ERC20_ABI,
-      functionName: 'decimals',
-    })
-    const amount = parseUnits(amountHuman.toString(), decimals)
-    const hash = await client.writeContract({
-      address: tokenAddress,
-      abi: ERC20_ABI,
-      functionName: 'transfer',
-      args: [toAddress, amount],
-    })
-    return { txHash: hash, success: true }
-  } catch (e: any) {
-    return { txHash: '', success: false, error: e.message }
-  }
+  // TODO: Replace with T3N TenantClient.executeBusinessContract()
+  return { txHash: '', success: false, error: 'T3N payment not yet implemented' }
 }
 
 export async function agentSendNative(
@@ -93,14 +46,6 @@ export async function agentSendNative(
   toAddress: `0x${string}`,
   amountHSK: number
 ): Promise<{ txHash: string; success: boolean; error?: string }> {
-  try {
-    const client = getAgentWalletClient(agentIndex)
-    const hash = await client.sendTransaction({
-      to: toAddress,
-      value: parseEther(amountHSK.toString()),
-    })
-    return { txHash: hash, success: true }
-  } catch (e: any) {
-    return { txHash: '', success: false, error: e.message }
-  }
+  // TODO: Replace with T3N TenantClient.executeBusinessContract()
+  return { txHash: '', success: false, error: 'T3N payment not yet implemented' }
 }
