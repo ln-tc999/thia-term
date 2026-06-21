@@ -23,7 +23,7 @@ export function Footer() {
         </div>
 
         <p className="text-xs text-white/20">
-          © 2026 Thia-Term · Built on HashKey Chain
+          © 2026 Thia-Term · Powered by T3N
         </p>
       </div>
     </footer>
