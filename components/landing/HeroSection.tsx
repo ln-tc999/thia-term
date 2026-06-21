@@ -48,7 +48,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="hero-fade-1 inline-flex items-center gap-2 bg-white/[0.08] border border-white/15 rounded-full px-3.5 py-1.5 text-xs sm:text-sm text-white/80 mb-8 sm:mb-10">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Built on HashKey Chain
+          Powered by T3N
         </div>
 
         {/* Headline */}
@@ -63,7 +63,7 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <p className="hero-fade-3 text-white/55 text-base sm:text-lg leading-relaxed max-w-lg mb-10 sm:mb-12">
-          Invoices, payment links, payroll, and AI agents — all on HashKey Chain with compliance built in.
+          Invoices, payment links, payroll, and AI agents — all with compliance built in.
         </p>
 
         {/* CTAs */}
