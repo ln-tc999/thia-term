@@ -7,7 +7,6 @@ import { prisma } from "@/lib/prisma"
 import { logAudit } from "@/lib/audit"
 import { logNotification } from "@/lib/notifications"
 import { sendInvoiceCreatedEmail, sendInvoicePaidEmail } from "@/lib/email"
-import { hspClient } from "@/lib/hsp-client"
 import { z } from "zod"
 
 export type Invoice = {
@@ -204,43 +203,6 @@ export async function POST(request: NextRequest) {
     await prisma.agent.update({ where: { id: body.agentId }, data: { invoiceCount: { increment: 1 } } }).catch(() => {})
   }
 
-  // Attempt HSP Single-Pay Cart Mandate for pending invoices (graceful degradation)
-  let hspCheckoutUrl: string | null = null
-  let hspMandateId: string | null = null
-  let hspNote: string | undefined
-
-  if (status === 'pending') {
-    try {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-      const token = (currency as 'USDC' | 'USDT' | 'HSK') || 'USDC'
-      const mandate = await hspClient.createSinglePayMandate({
-        merchant_order_id: invoice.id,
-        amount: String(amount),
-        token: ['USDC', 'USDT', 'HSK'].includes(token) ? token : 'USDC',
-        chain_id: 177, // HashKey Chain mainnet
-        webhook_url: `${appUrl}/api/webhooks/hsp`,
-        redirect_url: `${appUrl}/pay/invoice/${invoice.id}`,
-        description: body.description || `Invoice ${invoice.invoiceNumber}`,
-      })
-
-      if (mandate?.data?.cart_mandate_id) {
-        hspCheckoutUrl = mandate.data.checkout_url
-        hspMandateId = mandate.data.cart_mandate_id
-        await prisma.invoice.update({
-          where: { id: invoice.id },
-          data: { hspCheckoutUrl, hspMandateId },
-        })
-      }
-    } catch (err) {
-      console.error('[HSP] Failed to create single-pay mandate for invoice:', err)
-      hspNote = 'HSP connection pending — add credentials to enable HSP checkout'
-    }
-
-    if (!hspCheckoutUrl && !hspNote) {
-      hspNote = 'HSP connection pending — add credentials to enable HSP checkout'
-    }
-  }
-
   await logAudit({
     userId,
     action: 'invoice.created',
@@ -271,8 +233,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     success: true,
-    data: { ...invoice, paymentLinkCode, hspCheckoutUrl, hspMandateId },
-    ...(hspNote ? { hspNote } : {}),
+    data: { ...invoice, paymentLinkCode },
   }, { status: 201 })
 }
 
