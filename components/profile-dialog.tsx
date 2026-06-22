@@ -96,11 +96,11 @@ export function ProfileDialog({ open, onClose }: ProfileDialogProps) {
           {/* Avatar */}
           <div className="flex flex-col items-center gap-3">
             <div className="relative group">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-emerald-900/40 flex items-center justify-center border border-white/[0.08] shadow-lg shadow-black/40 ring-2 ring-emerald-500/10">
+              <div className="w-20 h-20 rounded-full overflow-hidden bg-sky-900/40 flex items-center justify-center border border-white/[0.08] shadow-lg shadow-black/40 ring-2 ring-sky-500/10">
                 {currentAvatar ? (
                   <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-emerald-400 font-bold text-2xl">{initials}</span>
+                  <span className="text-sky-400 font-bold text-2xl">{initials}</span>
                 )}
               </div>
               <button
@@ -112,7 +112,7 @@ export function ProfileDialog({ open, onClose }: ProfileDialogProps) {
             </div>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="text-xs text-emerald-400 hover:text-emerald-300 font-medium tracking-wide"
+              className="text-xs text-sky-400 hover:text-sky-300 font-medium tracking-wide"
             >
               Change photo
             </button>
@@ -141,7 +141,7 @@ export function ProfileDialog({ open, onClose }: ProfileDialogProps) {
             <Button
               onClick={saveProfile}
               disabled={saving}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium shadow-lg shadow-emerald-900/40"
+              className="w-full bg-sky-600 hover:bg-sky-500 text-white font-medium shadow-lg shadow-sky-900/40"
             >
               {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />{uploadingAvatar ? "Uploading…" : "Saving…"}</> : "Save Changes"}
             </Button>
@@ -160,7 +160,7 @@ export function ProfileDialog({ open, onClose }: ProfileDialogProps) {
           </div>
 
           {msg && (
-            <p className={`text-xs ${msg.type === "success" ? "text-emerald-400" : "text-red-400"}`}>{msg.text}</p>
+            <p className={`text-xs ${msg.type === "success" ? "text-sky-400" : "text-red-400"}`}>{msg.text}</p>
           )}
         </div>
       </DialogContent>
