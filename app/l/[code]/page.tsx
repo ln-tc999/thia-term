@@ -41,7 +41,7 @@ export default async function PaymentLinkPage({ params }: Props) {
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl overflow-hidden">
-              <img src="/ai-assistant-icon.png" alt="Thia-Term" className="w-full h-full object-cover" />
+              <img src="/thia-term-logo.png" alt="Thia-Term" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-lg tracking-tight">
               <span className="text-slate-900">Thia</span>
