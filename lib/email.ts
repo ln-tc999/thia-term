@@ -2,7 +2,10 @@ import { Resend } from 'resend'
 
 function getResend() {
   const key = process.env.RESEND_API_KEY
-  if (!key) throw new Error('Missing RESEND_API_KEY')
+  if (!key) {
+    console.warn('⚠️  RESEND_API_KEY not set, email notifications disabled')
+    return null
+  }
   return new Resend(key)
 }
 
@@ -59,6 +62,12 @@ export async function sendInvoicePaidEmail({
   txHash?: string | null
   network?: string
 }) {
+  const resend = getResend()
+  if (!resend) {
+    console.log('📧 [email] Skipped invoice paid email (Resend not configured)')
+    return Promise.resolve({ id: null })
+  }
+
   const body = `
     <div class="badge">✓ PAID</div>
     <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:600">Invoice ${invoiceNumber} has been paid.</p>
@@ -73,7 +82,7 @@ export async function sendInvoicePaidEmail({
     <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
-  return getResend().emails.send({
+  return resend.emails.send({
     from: FROM,
     to: toEmail,
     subject: `✓ Invoice ${invoiceNumber} paid — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
@@ -98,6 +107,12 @@ export async function sendInvoiceCreatedEmail({
   dueAt?: string | null
   paymentLink?: string | null
 }) {
+  const resend = getResend()
+  if (!resend) {
+    console.log('📧 [email] Skipped invoice created email (Resend not configured)')
+    return Promise.resolve({ id: null })
+  }
+
   const body = `
     <div class="badge" style="background:#dbeafe;color:#1e40af">INVOICE SENT</div>
     <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:600">Invoice ${invoiceNumber} created.</p>
@@ -111,7 +126,7 @@ export async function sendInvoiceCreatedEmail({
     <a href="${APP_URL}/dashboard?tab=ai-invoices" class="btn">View in Thia-Term →</a>
   `
 
-  return getResend().emails.send({
+  return resend.emails.send({
     from: FROM,
     to: toEmail,
     subject: `Invoice ${invoiceNumber} created — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
@@ -134,6 +149,12 @@ export async function sendPaymentReceivedEmail({
   txHash?: string | null
   paymentLinkName?: string | null
 }) {
+  const resend = getResend()
+  if (!resend) {
+    console.log('📧 [email] Skipped payment received email (Resend not configured)')
+    return Promise.resolve({ id: null })
+  }
+
   const body = `
     <div class="badge">✓ PAYMENT RECEIVED</div>
     <p style="margin:0 0 16px;font-size:15px;color:#111;font-weight:600">You received a payment via Thia-Term.</p>
@@ -146,7 +167,7 @@ export async function sendPaymentReceivedEmail({
     <a href="${APP_URL}/dashboard" class="btn">View Dashboard →</a>
   `
 
-  return getResend().emails.send({
+  return resend.emails.send({
     from: FROM,
     to: toEmail,
     subject: `💰 Payment received — ${parseFloat(String(amount)).toFixed(2)} ${currency}`,
