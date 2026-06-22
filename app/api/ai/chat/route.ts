@@ -10,6 +10,8 @@ const OLLAMA_BASE = process.env.OLLAMA_BASE_URL ?? 'http://localhost:11434'
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL ?? 'qwen2.5:7b'
 const MOONSHOT_BASE = 'https://api.moonshot.cn/v1'
 const MOONSHOT_MODEL = process.env.MOONSHOT_MODEL ?? 'moonshot-v1-8k'
+const NVIDIA_BASE = 'https://integrate.api.nvidia.com/v1'
+const NVIDIA_MODEL = process.env.NVIDIA_MODEL ?? 'meta/llama-3.1-70b-instruct'
 
 const INJECTION_PATTERNS = [
   /ignore\s+(previous|all|prior|above)\s+(instructions?|prompts?|context)/i,
@@ -81,6 +83,45 @@ async function askMoonshot(message: string, history: { role: string; content: st
   const data = await res.json()
   const reply = data.choices?.[0]?.message?.content
   if (!reply) throw new Error('Empty response from Moonshot')
+  return reply as string
+}
+
+
+async function askNvidia(message: string, history: { role: string; content: string }[]) {
+  const apiKey = process.env.NVIDIA_API_KEY!
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    ...(history?.map((msg) => ({
+      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      content: msg.content,
+    })) ?? []),
+    { role: 'user', content: message },
+  ]
+
+  const res = await fetch(`${NVIDIA_BASE}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: NVIDIA_MODEL,
+      messages,
+      temperature: 0.7,
+      max_tokens: 1024,
+      top_p: 1,
+      stream: false,
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`NVIDIA API error ${res.status}: ${text}`)
+  }
+
+  const data = await res.json()
+  const reply = data.choices?.[0]?.message?.content
+  if (!reply) throw new Error('Empty response from NVIDIA')
   return reply as string
 }
 
@@ -176,8 +217,10 @@ export async function POST(request: NextRequest) {
 
     let reply: string
 
-    // Provider priority: Moonshot → Anthropic → Ollama
-    if (process.env.MOONSHOT_API_KEY) {
+    // Provider priority: NVIDIA → Moonshot → Anthropic → Ollama
+    if (process.env.NVIDIA_API_KEY) {
+      reply = await askNvidia(safeMessage, history ?? [])
+    } else if (process.env.MOONSHOT_API_KEY) {
       reply = await askMoonshot(safeMessage, history ?? [])
     } else if (process.env.ANTHROPIC_API_KEY) {
       reply = await askClaude(safeMessage, history ?? [])

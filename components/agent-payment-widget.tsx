@@ -1,6 +1,13 @@
 "use client"
+
 import { useState } from "react"
-import { Bot, CheckCircle, ExternalLink, User } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Bot, CheckCircle, ExternalLink, User, ArrowRight, Zap, Shield, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 interface AgentPaymentWidgetProps {
   agents: { id: string; name: string; walletAddress?: string | null }[]
@@ -46,148 +53,226 @@ export function AgentPaymentWidget({ agents }: AgentPaymentWidgetProps) {
     }
   }
 
+  const canPay = fromAgent && amount && parseFloat(amount) > 0 && (toType === 'human' ? toAddress : toAgent)
+
   return (
-    <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6">
-      <div className="mb-6">
-        <h3 className="font-semibold text-white">Agent Payments</h3>
-        <p className="text-sm text-slate-500">Autonomous settlements via T3N</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6"
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+            <Bot className="w-5 h-5 text-sky-400" />
+          </div>
+          <div>
+            <h3 className="font-bold text-white text-base">Agent Payments</h3>
+            <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+              <Shield className="w-3 h-3 text-sky-400" />
+              Autonomous settlements via T3N TEE
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-4">
         {/* From Agent */}
-        <div>
-          <label className="text-sm font-medium text-slate-400 mb-1 block">From Agent</label>
-          <select
-            value={fromAgent}
-            onChange={(e) => setFromAgent(e.target.value)}
-            className="w-full border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white appearance-none cursor-pointer bg-[length:16px_16px] bg-[right_12px_center] bg-no-repeat"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239b9ba5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E")` }}
-          >
-            <option value="" className="bg-[#0f172a] text-slate-400">Select agent...</option>
-            {agents.map((a) => (
-              <option key={a.id} value={a.id} className="bg-[#0f172a]">
-                {a.name}
-              </option>
-            ))}
-          </select>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-slate-400 font-medium">From Agent</Label>
+          <Select value={fromAgent} onValueChange={setFromAgent}>
+            <SelectTrigger className="bg-white/[0.04] border-white/10 text-slate-300 h-12">
+              <SelectValue placeholder="Select agent..." />
+            </SelectTrigger>
+            <SelectContent className="bg-glass border-white/[0.08] text-slate-300">
+              {agents.map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  <div className="flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-sky-400" />
+                    {a.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Payment Type Toggle */}
-        <div className="flex gap-2">
+        <div className="relative flex gap-2 p-1.5 bg-white/[0.04] backdrop-blur-xl rounded-xl border border-white/[0.08]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={toType}
+              layoutId="payment-type-indicator"
+              className="absolute inset-y-1.5 bg-gradient-to-r from-sky-500 to-sky-600 rounded-lg shadow-lg shadow-sky-500/20"
+              style={{
+                left: toType === 'human' ? '6px' : 'calc(50% + 2px)',
+                right: toType === 'human' ? 'calc(50% + 2px)' : '6px',
+              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            />
+          </AnimatePresence>
           <button
             onClick={() => setToType('human')}
-            className={`flex-1 py-2.5 text-sm rounded-xl border font-medium transition-colors ${
-              toType === 'human'
-                ? 'bg-sky-600 text-white border-sky-600'
-                : 'bg-white/[0.04] text-slate-400 border-white/[0.08] hover:border-sky-500/40 hover:text-slate-200'
-            }`}
+            className={cn(
+              "relative flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 flex items-center justify-center gap-1.5",
+              toType === 'human' ? "text-white" : "text-slate-400 hover:text-white"
+            )}
           >
-            <User className="w-4 h-4 inline mr-1.5" /> Human
+            <User className="w-4 h-4" />
+            Human
           </button>
           <button
             onClick={() => setToType('agent')}
-            className={`flex-1 py-2.5 text-sm rounded-xl border font-medium transition-colors ${
-              toType === 'agent'
-                ? 'bg-sky-600 text-white border-sky-600'
-                : 'bg-white/[0.04] text-slate-400 border-white/[0.08] hover:border-sky-500/40 hover:text-slate-200'
-            }`}
+            className={cn(
+              "relative flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 flex items-center justify-center gap-1.5",
+              toType === 'agent' ? "text-white" : "text-slate-400 hover:text-white"
+            )}
           >
-            <Bot className="w-4 h-4 inline mr-1.5" /> Agent
+            <Bot className="w-4 h-4" />
+            Agent
           </button>
         </div>
 
         {/* Destination */}
-        {toType === 'human' ? (
-          <input
-            value={toAddress}
-            onChange={(e) => setToAddress(e.target.value)}
-            placeholder="Recipient wallet 0x..."
-            className="w-full border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white placeholder:text-slate-600"
-          />
-        ) : (
-          <select
-            value={toAgent}
-            onChange={(e) => setToAgent(e.target.value)}
-            className="w-full border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white appearance-none cursor-pointer bg-[length:16px_16px] bg-[right_12px_center] bg-no-repeat"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239b9ba5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E")` }}
-          >
-            <option value="" className="bg-[#0f172a] text-slate-400">Select destination agent...</option>
-            {agents
-              .filter((a) => a.id !== fromAgent)
-              .map((a) => (
-                <option key={a.id} value={a.id} className="bg-[#0f172a]">
-                  {a.name}
-                </option>
-              ))}
-          </select>
-        )}
-
-        {/* Amount + Token */}
-        <div className="flex gap-2">
-          <input
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Amount"
-            type="number"
-            min="0"
-            step="any"
-            className="flex-1 border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white placeholder:text-slate-600"
-          />
-          <select
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            className="w-28 border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white appearance-none cursor-pointer bg-[length:16px_16px] bg-[right_12px_center] bg-no-repeat"
-            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%239b9ba5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E")` }}
-          >
-            <option className="bg-[#1e293b]">HSK</option>
-            <option className="bg-[#1e293b]">USDC</option>
-            <option className="bg-[#1e293b]">USDT</option>
-          </select>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-slate-400 font-medium">
+            To {toType === 'human' ? 'Human' : 'Agent'}
+          </Label>
+          {toType === 'human' ? (
+            <Input
+              value={toAddress}
+              onChange={(e) => setToAddress(e.target.value)}
+              placeholder="0x..."
+              className="bg-white/[0.04] border-white/10 text-white placeholder:text-slate-600 font-mono text-sm h-12"
+            />
+          ) : (
+            <Select value={toAgent} onValueChange={setToAgent}>
+              <SelectTrigger className="bg-white/[0.04] border-white/10 text-slate-300 h-12">
+                <SelectValue placeholder="Select destination agent..." />
+              </SelectTrigger>
+              <SelectContent className="bg-glass border-white/[0.08] text-slate-300">
+                {agents
+                  .filter((a) => a.id !== fromAgent)
+                  .map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      <div className="flex items-center gap-2">
+                        <Bot className="w-4 h-4 text-sky-400" />
+                        {a.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
-        <input
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          placeholder="Memo (optional)"
-          className="w-full border border-white/[0.08] rounded-xl px-4 py-3 text-sm bg-white/[0.04] text-white placeholder:text-slate-600"
-        />
+        {/* Amount + Token */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="col-span-2 space-y-1.5">
+            <Label className="text-xs text-slate-400 font-medium">Amount</Label>
+            <Input
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              type="number"
+              min="0"
+              step="any"
+              className="bg-white/[0.04] border-white/10 text-white placeholder:text-slate-600 text-lg font-semibold h-12"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs text-slate-400 font-medium">Token</Label>
+            <Select value={token} onValueChange={setToken}>
+              <SelectTrigger className="bg-white/[0.04] border-white/10 text-slate-300 h-12">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-glass border-white/[0.08] text-slate-300">
+                <SelectItem value="HSK">HSK</SelectItem>
+                <SelectItem value="USDC">USDC</SelectItem>
+                <SelectItem value="USDT">USDT</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-        <button
+        {/* Memo */}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-slate-400 font-medium">
+            Memo <span className="text-slate-600">(optional)</span>
+          </Label>
+          <Input
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            placeholder="Payment description..."
+            className="bg-white/[0.04] border-white/10 text-white placeholder:text-slate-600 h-12"
+          />
+        </div>
+
+        {/* Execute Button */}
+        <Button
           onClick={handlePay}
-          disabled={loading || !fromAgent || !amount}
-          className="w-full bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-sky-900/30"
+          disabled={loading || !canPay}
+          className="w-full bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white h-12 font-semibold shadow-lg shadow-sky-900/30 hover:shadow-sky-900/50 transition-all"
         >
           {loading ? (
-            'Sending via T3N...'
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Executing via T3N TEE...
+            </>
           ) : (
             <>
-              <Bot className="w-4 h-4" /> Execute Payment
+              <Zap className="w-4 h-4 mr-2" />
+              Execute Payment
+              <ArrowRight className="w-4 h-4 ml-2" />
             </>
           )}
-        </button>
+        </Button>
 
-        {result && (
-          <div className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-3 flex items-start gap-2">
-            <CheckCircle className="w-4 h-4 text-sky-400 mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-sky-400">Payment sent via T3N</p>
-              <a
-                href={result.txUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-sky-400/70 flex items-center gap-1 mt-1 hover:text-sky-400"
-              >
-                View on Explorer <ExternalLink className="w-3 h-3" />
-              </a>
-            </div>
-          </div>
-        )}
-        {error && (
-          <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
-            {error}
-          </p>
-        )}
+        {/* Success Result */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-sky-500/10 border border-sky-500/20 rounded-xl p-4"
+            >
+              <div className="flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-sky-400 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-sky-300">Payment Successful!</p>
+                  <p className="text-xs text-slate-400 mt-1">Executed via T3N TEE enclave</p>
+                  <a
+                    href={result.txUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 mt-2 font-medium"
+                  >
+                    View on Explorer
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Error */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-red-500/10 border border-red-500/20 rounded-xl p-4"
+            >
+              <p className="text-sm text-red-300">{error}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   )
 }

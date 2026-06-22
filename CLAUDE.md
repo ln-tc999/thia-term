@@ -232,9 +232,10 @@ prisma/
 - `DEPLOYER_MNEMONIC` — BIP-39 mnemonic for agent wallet derivation
 - `WALLET_ENCRYPTION_KEY` — 64-char hex string for AES-256-GCM
 
-**Optional:**
-- `MOONSHOT_API_KEY` — Moonshot AI (primary AI provider)
-- `ANTHROPIC_API_KEY` — Claude (fallback AI provider)
+**Optional (AI Features):**
+- `NVIDIA_API_KEY` — NVIDIA API Catalog (primary, has FREE tier at build.nvidia.com)
+- `MOONSHOT_API_KEY` — Moonshot AI (secondary AI provider)
+- `ANTHROPIC_API_KEY` — Claude (tertiary fallback AI provider)
 
 **See `.env.example` for full list.**
 
