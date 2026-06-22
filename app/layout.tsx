@@ -27,7 +27,7 @@ export default function RootLayout({
         <title>Thia-Term — Payment Infrastructure for Agents</title>
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Thia-Term — Payment Infrastructure for Agents" />
-        <meta property="og:description" content="On-chain invoicing and agent payments platform built natively on HashKey Chain. Create invoices, deploy AI agents, build on-chain reputation via ProofLink." />
+        <meta property="og:description" content="Payment infrastructure for AI agents powered by T3N. Create invoices, deploy AI agents, build on-chain reputation via ProofLink." />
         <meta property="og:image" content="/og-image.svg" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
