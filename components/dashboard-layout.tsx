@@ -175,12 +175,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Send className="w-5 h-5 text-white relative z-10" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right">Send Payment</TooltipContent>
+              <TooltipContent side="right" sideOffset={8}>
+                Send Payment
+              </TooltipContent>
             </Tooltip>
           </div>
 
           {/* Nav items */}
-          <nav className="flex-1 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] rounded-2xl p-3 flex flex-col gap-2 overflow-y-auto">
+          <nav className="flex-1 backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] rounded-2xl p-3 flex flex-col justify-center gap-2">
             {navigation.map((item) => {
               const isActive = activeTab === item.id
               const Icon = item.icon
@@ -205,7 +207,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       )}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">{item.name}</TooltipContent>
+                  <TooltipContent side="right" sideOffset={8}>
+                    {item.name}
+                  </TooltipContent>
                 </Tooltip>
               )
             })}
@@ -224,7 +228,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   ) : initials}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right">
+              <TooltipContent side="right" sideOffset={8}>
                 <div className="text-left">
                   <p className="font-semibold">{session?.user?.name ?? "User"}</p>
                   <p className="text-xs text-slate-400">{email}</p>
@@ -241,7 +245,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <LogOut className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right">Logout</TooltipContent>
+              <TooltipContent side="right" sideOffset={8}>
+                Logout
+              </TooltipContent>
             </Tooltip>
           </div>
         </motion.aside>
@@ -249,7 +255,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* ─── Main content ─── */}
       <div className="md:ml-28 flex flex-col min-h-screen">
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-6 md:px-8 sticky top-0 z-30 backdrop-blur-xl bg-white/[0.02] border-b border-white/[0.08]">
+        <header className="h-20 flex items-center justify-between px-6 md:px-8 sticky top-0 z-30 backdrop-blur-xl bg-white/[0.02] border-b border-white/[0.08]">
           <div className="flex items-center gap-4">
             {/* Mobile menu toggle */}
             <button
@@ -260,19 +266,37 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="h-5 w-5" />
             </button>
 
-            {/* Active page label */}
+            {/* Active page label with better hierarchy */}
             <div>
-              <h1 className="text-lg font-bold text-white">
-                {navigation.find(n => n.id === activeTab)?.name ?? "Dashboard"}
-              </h1>
-              <p className="text-xs text-slate-500">
-                Welcome back, {session?.user?.name?.split(' ')[0] ?? 'User'}
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-xl font-bold text-white tracking-tight">
+                  {navigation.find(n => n.id === activeTab)?.name ?? "Dashboard"}
+                </h1>
+                {navigation.find(n => n.id === activeTab)?.badge && (
+                  <span className="px-2 py-0.5 text-[10px] font-bold bg-sky-500/10 text-sky-400 rounded-md border border-sky-500/20">
+                    {navigation.find(n => n.id === activeTab)?.badge}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400">
+                Welcome back, <span className="text-sky-400 font-medium">{session?.user?.name?.split(' ')[0] ?? 'User'}</span>
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Wallet Address Display */}
+            {sessionWalletTop && (
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+                <Wallet className="w-4 h-4 text-sky-400" />
+                <span className="text-xs font-mono text-slate-300">
+                  {sessionWalletTop.slice(0, 6)}...{sessionWalletTop.slice(-4)}
+                </span>
+              </div>
+            )}
+
             <NotificationBell onNavigate={navigateTo} />
+
             <button
               onClick={() => setProfileOpen(true)}
               className="flex items-center gap-2 hover:bg-white/[0.04] rounded-xl px-3 py-2 transition-colors group"
