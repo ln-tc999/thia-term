@@ -207,7 +207,7 @@ function AddRuleModal({ open, agents, onClose, onCreated }: AddRuleModalProps) {
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-sky-600 hover:bg-sky-700 text-white"
             onClick={handleCreate}
             disabled={loading}
           >
@@ -311,7 +311,7 @@ export function AgentRulesWidget({ agents }: AgentRulesWidgetProps) {
 
         <Button
           variant="outline"
-          className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 gap-1.5"
+          className="border-sky-200 text-sky-700 hover:bg-sky-50 gap-1.5"
           onClick={() => setShowAddRule(true)}
           disabled={agents.length === 0}
         >
@@ -341,7 +341,7 @@ export function AgentRulesWidget({ agents }: AgentRulesWidgetProps) {
             <p className="text-slate-700 font-semibold">No rules yet</p>
             <p className="text-slate-400 text-sm mt-1">Add a rule to automate your agent&apos;s behaviour</p>
             <Button
-              className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5"
+              className="mt-4 bg-sky-600 hover:bg-sky-700 text-white gap-1.5"
               onClick={() => setShowAddRule(true)}
             >
               <Plus className="h-4 w-4" />
@@ -370,7 +370,7 @@ export function AgentRulesWidget({ agents }: AgentRulesWidgetProps) {
                           <span className="text-xs text-slate-400">
                             {agentName(rule.agentId)}
                           </span>
-                          <Badge className={`text-xs border ${rule.status === "active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
+                          <Badge className={`text-xs border ${rule.status === "active" ? "bg-sky-50 text-sky-700 border-sky-200" : "bg-slate-100 text-slate-500 border-slate-200"}`}>
                             {rule.status}
                           </Badge>
                         </div>
