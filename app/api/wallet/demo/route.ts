@@ -23,7 +23,7 @@ export async function POST() {
     // Check if user already has a wallet
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { walletAddress: true, isDemo: true },
+      select: { walletAddress: true },
     })
 
     if (user?.walletAddress) {
@@ -52,9 +52,8 @@ export async function POST() {
         encryptedMnemonic,
         encryptedPrivateKey,
         walletType: 'managed',
-        isDemo: true,
-        // Update email if not set (for OAuth users)
-        email: user?.isDemo ? generateDemoEmail() : undefined,
+        // TODO: Re-enable isDemo after migration deployed to production
+        // isDemo: true,
       },
     })
 
@@ -106,10 +105,12 @@ export async function DELETE() {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { isDemo: true, walletAddress: true },
+      select: { walletAddress: true, walletType: true },
     })
 
-    if (!user?.isDemo) {
+    // TODO: Re-enable demo check after isDemo migration deployed
+    // For now, allow deletion if wallet type is 'managed'
+    if (!user?.walletType || user.walletType !== 'managed') {
       return NextResponse.json(
         { error: 'Not a demo wallet. Cannot delete.' },
         { status: 400 }
@@ -125,7 +126,8 @@ export async function DELETE() {
         encryptedMnemonic: null,
         encryptedPrivateKey: null,
         walletType: null,
-        isDemo: false,
+        // TODO: Re-enable after migration
+        // isDemo: false,
       },
     })
 

@@ -102,11 +102,12 @@ export const authOptions: NextAuthOptions = {
           // the wallet address is never lost on re-login.
           const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
-            select: { walletAddress: true, walletType: true, isDemo: true },
+            select: { walletAddress: true, walletType: true },
           })
           token.walletAddress = dbUser?.walletAddress ?? null
           token.walletType = dbUser?.walletType ?? null
-          token.isDemo = dbUser?.isDemo ?? false
+          // TODO: Re-enable after isDemo migration is deployed to production
+          token.isDemo = false
         }
       }
       // Handle session.update() calls from the client
