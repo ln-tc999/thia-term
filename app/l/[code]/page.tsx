@@ -45,7 +45,7 @@ export default async function PaymentLinkPage({ params }: Props) {
             </div>
             <span className="font-bold text-lg tracking-tight">
               <span className="text-slate-900">Thia</span>
-              <span className="text-emerald-600">-Term</span>
+              <span className="text-sky-600">-Term</span>
             </span>
           </div>
         </div>
