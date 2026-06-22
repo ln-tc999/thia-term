@@ -222,7 +222,7 @@ export async function GET(request: NextRequest) {
           <circle cx="22.8" cy="11.6" r="1.8" fill="white"/>
           <circle cx="9.2" cy="20.4" r="1.8" fill="white"/>
         </svg>
-        <div class="logo-text">Flow<span>Link</span></div>
+        <div class="logo-text">Thia<span>Term</span></div>
       </div>
       <div style="font-size:12px;color:#6b7280;margin-top:4px">Official Account Statement</div>
       <div class="doc-id-badge">
@@ -330,10 +330,10 @@ export async function GET(request: NextRequest) {
       </tr></thead>
       <tbody>
         ${paymentLinks.map(l => row([
-          l.name,
+          l.name ?? 'Unnamed',
           `<span style="font-family:monospace;font-size:11px">${l.code}</span>`,
           l.network,
-          l.amountMin === l.amountMax ? `${l.amountMin} ${l.sourceToken}` : `${l.amountMin}–${l.amountMax} ${l.sourceToken}`,
+          l.amountMin === l.amountMax ? `${l.amountMin ?? 0} ${l.sourceToken}` : `${l.amountMin ?? 0}–${l.amountMax ?? 0} ${l.sourceToken}`,
           String(l.transactions ?? 0),
           `$${(l.totalVolume ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           statusBadge(l.status),
