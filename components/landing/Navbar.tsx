@@ -54,7 +54,7 @@ export function Navbar() {
               className="hover:text-white transition-colors duration-200 relative group"
             >
               {item}
-              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-emerald-400 group-hover:w-full transition-all duration-300" />
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-sky-400 group-hover:w-full transition-all duration-300" />
             </a>
           ))}
         </nav>
