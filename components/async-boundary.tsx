@@ -120,7 +120,7 @@ export function AsyncBoundary({
           {emptyState.icon ?? (
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
               style={{ background: "linear-gradient(135deg, #0a2e2e, #0f3d3d)" }}>
-              <Inbox className="h-7 w-7 text-emerald-400" />
+              <Inbox className="h-7 w-7 text-sky-400" />
             </div>
           )}
           <p className="font-semibold text-slate-300">{emptyState.heading}</p>
@@ -130,7 +130,7 @@ export function AsyncBoundary({
           {emptyState.action && (
             <Button
               onClick={emptyState.action.onClick}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl"
+              className="bg-sky-600 hover:bg-sky-500 text-white rounded-xl"
             >
               {emptyState.action.label}
             </Button>
