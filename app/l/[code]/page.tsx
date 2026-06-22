@@ -90,11 +90,11 @@ export default async function PaymentLinkPage({ params }: Props) {
           paymentLink={{
             id: link.id,
             code: link.code,
-            name: link.name,
+            name: link.name ?? 'Payment Link',
             network: link.network,
             sourceToken: link.sourceToken,
-            amountMin: link.amountMin,
-            amountMax: link.amountMax,
+            amountMin: link.amountMin ?? 0,
+            amountMax: link.amountMax ?? 0,
             recipientAddress,
             ownerName,
           }}
