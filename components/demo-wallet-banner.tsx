@@ -1,6 +1,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
+import { signOut } from "next-auth/react"
 import { motion } from "framer-motion"
 import { Sparkles, X } from "lucide-react"
 import { useState } from "react"
@@ -25,6 +26,11 @@ export function DemoWalletBanner() {
     setRemoving(true)
     try {
       const res = await fetch("/api/wallet/demo", { method: "DELETE" })
+      if (res.status === 401) {
+        toast.error("Session expired. Please sign in again.")
+        signOut({ callbackUrl: "/login" })
+        return
+      }
       const data = await res.json()
 
       if (data.success) {

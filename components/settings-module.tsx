@@ -11,7 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
+import { toast } from "sonner"
 import { WalletSetupModal } from "@/components/wallet-setup-modal"
 
 // ─── Panel definitions ─────────────────────────────────────────────────────
@@ -190,6 +191,11 @@ function PersonalDetailsPanel({ onBack }: { onBack: () => void }) {
     setSeedLoading(true)
     try {
       const res = await fetch("/api/user/wallet/seed")
+      if (res.status === 401) {
+        toast.error("Session expired. Please sign in again.")
+        signOut({ callbackUrl: "/login" })
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setSeedPhrase(data.mnemonic)

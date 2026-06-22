@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,6 +34,11 @@ export function WalletOnboardingModal({ open, onClose }: WalletOnboardingModalPr
         method: "POST",
         headers: { "Content-Type": "application/json" },
       })
+      if (res.status === 401) {
+        toast.error("Session expired. Please sign in again.")
+        signOut({ callbackUrl: "/login" })
+        return
+      }
       const data = await res.json()
       if (data.success) {
         setMnemonic(data.mnemonic)
@@ -56,6 +62,11 @@ export function WalletOnboardingModal({ open, onClose }: WalletOnboardingModalPr
         method: "POST",
         headers: { "Content-Type": "application/json" },
       })
+      if (res.status === 401) {
+        toast.error("Session expired. Please sign in again.")
+        signOut({ callbackUrl: "/login" })
+        return
+      }
       const data = await res.json()
       if (data.success) {
         await update({
