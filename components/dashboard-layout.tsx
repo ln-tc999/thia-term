@@ -154,11 +154,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Logo */}
         <div className="p-5 border-b border-glass-border">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-emerald-900/40 ring-1 ring-emerald-500/20">
+            <div className="w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-sky-900/40 ring-1 ring-sky-500/20">
               <img src="/ai-assistant-icon.png" alt="Thia-Term" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-xl tracking-tight">
-              <span className="text-white">Flow</span><span className="text-emerald-400">Link</span>
+              <span className="text-white">Flow</span><span className="text-sky-400">Link</span>
             </span>
           </div>
         </div>
@@ -187,18 +187,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 className={cn(
                   "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                   isActive
-                    ? "text-emerald-300 bg-emerald-500/[0.08]"
+                    ? "text-sky-300 bg-sky-500/[0.08]"
                     : "text-slate-500 hover:text-slate-200 hover:bg-white/[0.03]",
                 )}
                 aria-current={isActive ? "page" : undefined}
               >
-                <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-emerald-400" : "text-slate-600")} />
+                <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-sky-400" : "text-slate-600")} />
                 <span>{item.name}</span>
                 {item.badge && (
                   <span className={cn(
                     "ml-auto text-[10px] rounded-md px-1.5 py-0.5 font-semibold",
                     isActive
-                      ? "bg-emerald-500/15 text-emerald-400"
+                      ? "bg-sky-500/15 text-sky-400"
                       : "bg-white/[0.05] text-slate-600",
                   )}>
                     {item.badge}
@@ -217,7 +217,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               className="flex-1 flex items-center gap-3 hover:bg-white/[0.04] rounded-xl p-2 transition-colors text-left cursor-pointer min-w-0 group"
               title="Edit profile"
             >
-              <div className="w-9 h-9 rounded-full bg-emerald-900/40 flex items-center justify-center text-emerald-400 font-semibold text-sm shrink-0 overflow-hidden ring-1 ring-emerald-500/20">
+              <div className="w-9 h-9 rounded-full bg-sky-900/40 flex items-center justify-center text-sky-400 font-semibold text-sm shrink-0 overflow-hidden ring-1 ring-sky-500/20">
                 {session?.user?.image ? (
                   <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
                 ) : initials}
@@ -265,7 +265,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               onClick={() => setProfileOpen(true)}
               className="flex items-center gap-2 hover:bg-white/[0.04] rounded-xl px-2 py-1.5 transition-colors"
             >
-              <div className="w-7 h-7 rounded-full bg-emerald-900/40 flex items-center justify-center text-emerald-400 font-semibold text-xs ring-1 ring-emerald-500/20 overflow-hidden">
+              <div className="w-7 h-7 rounded-full bg-sky-900/40 flex items-center justify-center text-sky-400 font-semibold text-xs ring-1 ring-sky-500/20 overflow-hidden">
                 {session?.user?.image ? (
                   <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
                 ) : initials}
