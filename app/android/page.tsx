@@ -38,7 +38,7 @@ export default function AndroidComingSoon() {
         }}
       />
       {/* Radial glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center justify-between px-6 py-5 border-b border-white/5">
@@ -62,20 +62,20 @@ export default function AndroidComingSoon() {
           className="max-w-xl w-full"
         >
           {/* Icon */}
-          <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-8">
-            <Smartphone className="h-9 w-9 text-emerald-400" />
+          <div className="w-20 h-20 rounded-3xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-8">
+            <Smartphone className="h-9 w-9 text-sky-400" />
           </div>
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-sm font-medium mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
             Coming Soon
           </div>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl font-black text-white mb-4 tracking-tight leading-[1.1]">
             Mobile App{' '}
-            <span className="text-emerald-400">Launching Soon</span>
+            <span className="text-sky-400">Launching Soon</span>
           </h1>
           <p className="text-lg text-slate-400 leading-relaxed mb-10">
             Take Thia-Term on the go. Create payment links, track compliance, and manage crypto payments from your phone — available on iOS and Android.
@@ -88,7 +88,7 @@ export default function AndroidComingSoon() {
                 key={f}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-slate-300"
               >
-                <CheckCircle className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle className="h-3.5 w-3.5 text-sky-400 shrink-0" />
                 {f}
               </span>
             ))}
@@ -102,12 +102,12 @@ export default function AndroidComingSoon() {
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-11"
+              className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-sky-500 h-11"
             />
             <Button
               type="submit"
               disabled={submitting}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-11 px-6 shrink-0"
+              className="bg-sky-600 hover:bg-sky-700 text-white font-semibold h-11 px-6 shrink-0"
             >
               {submitting ? 'Saving…' : 'Notify me'}
               {!submitting && <ArrowRight className="ml-1.5 h-4 w-4" />}
