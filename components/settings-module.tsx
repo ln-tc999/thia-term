@@ -45,7 +45,7 @@ const settingsSections = [
     title: "Product",
     items: [
       { id: "stablecoins" as PanelId, icon: Coins, title: "Stablecoin Settings", desc: "Configure accepted stablecoins and token preferences for payments." },
-      { id: "wallet-chain" as PanelId, icon: Wallet, title: "Wallet & Chain", desc: "Manage your connected wallet and HashKey Chain settings." },
+      { id: "wallet-chain" as PanelId, icon: Wallet, title: "Wallet & Chain", desc: "Manage your connected wallet and T3N settings." },
       { id: "payment-links-cfg" as PanelId, icon: Globe, title: "Payment Links", desc: "Configure default settings for your payment links." },
       { id: "compliance" as PanelId, icon: Shield, title: "Compliance", desc: "Manage KYC/AML rules and compliance thresholds." },
       { id: "invoices-cfg" as PanelId, icon: FileText, title: "Invoice Settings", desc: "Set invoice numbering, templates, and due date defaults." },
@@ -723,10 +723,31 @@ function ExportsPanel({ onBack }: { onBack: () => void }) {
 
   const reports = [
     {
-      type: 'statement', label: 'Account Statement', desc: 'Full summary — payments, invoices, links, wallet. Opens as a printable page (save as PDF).', isHtml: true,
+      type: 'statement',
+      label: 'Account Statement',
+      desc: 'Full summary — payments, invoices, links, wallet. Opens as a printable page (save as PDF).',
+      isHtml: true,
       filename: `thia-term-statement-${new Date().toISOString().split('T')[0]}.html`,
+    },
+    {
+      type: 'payments',
+      label: 'Payments Export',
+      desc: 'Export all payment transactions as CSV.',
+      isHtml: false,
       filename: `thia-term-payments-${new Date().toISOString().split('T')[0]}.csv`,
+    },
+    {
+      type: 'invoices',
+      label: 'Invoices Export',
+      desc: 'Export all invoices as CSV.',
+      isHtml: false,
       filename: `thia-term-invoices-${new Date().toISOString().split('T')[0]}.csv`,
+    },
+    {
+      type: 'payroll',
+      label: 'Payroll Export',
+      desc: 'Export all payroll records as CSV.',
+      isHtml: false,
       filename: `thia-term-payroll-${new Date().toISOString().split('T')[0]}.csv`,
     },
   ]
