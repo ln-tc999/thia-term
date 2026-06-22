@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-config"
 import { prisma } from "@/lib/prisma"
-import { hspClient } from "@/lib/hsp-client"
 import { z } from "zod"
 
 function unauth() {
@@ -79,7 +78,7 @@ export async function POST(request: NextRequest) {
       userId,
       code: body.code || `pay-${Date.now()}`,
       name: body.name || null,
-      network: body.network || "hashkey",
+      network: body.network || "t3n_testnet",
       sourceToken: body.sourceToken || "USDC",
       destStable: body.destStable || "USDC",
       amountMin: body.amountMin ?? null,
@@ -89,46 +88,10 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  // Attempt HSP Single-Pay Cart Mandate (graceful degradation)
-  let hspCheckoutUrl: string | null = null
-  let hspMandateId: string | null = null
-  let hspNote: string | undefined
-
-  try {
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    const token = (body.sourceToken as "USDC" | "USDT" | "HSK") || "USDC"
-    const mandate = await hspClient.createSinglePayMandate({
-      merchant_order_id: link.id,
-      amount: String(body.amountMin ?? 0),
-      token: ["USDC", "USDT", "HSK"].includes(token) ? token : "USDC",
-      chain_id: 177, // HashKey Chain mainnet
-      webhook_url: `${appUrl}/api/webhooks/hsp`,
-      redirect_url: `${appUrl}/l/${link.code}`,
-      description: body.name || `Thia-Term Payment ${link.code}`,
-    })
-
-    if (mandate?.data?.cart_mandate_id) {
-      hspCheckoutUrl = mandate.data.checkout_url
-      hspMandateId = mandate.data.cart_mandate_id
-      await prisma.paymentLink.update({
-        where: { id: link.id },
-        data: { hspCheckoutUrl, hspMandateId },
-      })
-    }
-  } catch (err) {
-    console.error("[HSP] Failed to create single-pay mandate for payment link:", err)
-    hspNote = "HSP connection pending — add credentials to enable HSP checkout"
-  }
-
-  if (!hspCheckoutUrl && !hspNote) {
-    hspNote = "HSP connection pending — add credentials to enable HSP checkout"
-  }
-
   return NextResponse.json(
     {
       success: true,
-      data: { ...link, hspCheckoutUrl, hspMandateId },
-      ...(hspNote ? { hspNote } : {}),
+      data: link,
     },
     { status: 201 },
   )
