@@ -19,14 +19,14 @@ export function WalletSetupModal({ open, onClose }: WalletSetupModalProps) {
       <DialogContent className="max-w-sm bg-[#0a1220]/95 backdrop-blur-xl border border-white/[0.08] text-white shadow-2xl shadow-black/60">
         <DialogHeader>
           <DialogTitle className="text-white font-semibold tracking-tight flex items-center gap-2">
-            <Wallet className="h-4 w-4 text-emerald-400" />
+            <Wallet className="h-4 w-4 text-sky-400" />
             T3N Wallet
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {walletAddress ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-emerald-400">
+              <div className="flex items-center gap-2 text-sky-400">
                 <CheckCircle className="h-4 w-4" />
                 <span className="text-sm font-medium">Wallet active</span>
               </div>
