@@ -85,7 +85,7 @@ model PaymentLink {
   recipientAddress String?
   hspCheckoutUrl   String?
   hspMandateId     String?
-  network          String   @default("hashkey_testnet")
+  network          String   @default("t3n_testnet")
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   payments Payment[]
