@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       totalAmount: parseFloat(body.totalAmount) || 0,
       currency: body.currency || "USDC",
       status: "pending",
-      network: body.network || "hashkey",
+      network: body.network || "t3n_testnet",
       scheduledAt: body.scheduledAt ? new Date(body.scheduledAt) : null,
       recipients: body.recipients
         ? {
