@@ -67,11 +67,17 @@ export async function POST(request: NextRequest) {
   }
   const body = parsed.data
 
-  // Look up the authenticated user's wallet address to use as recipient
+  // Validate user still exists in DB (JWT may reference a deleted user after DB reset)
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { walletAddress: true },
   })
+  if (!user) {
+    return NextResponse.json(
+      { success: false, error: "Session user not found in database. Please sign out and sign in again." },
+      { status: 401 },
+    )
+  }
 
   const link = await prisma.paymentLink.create({
     data: {

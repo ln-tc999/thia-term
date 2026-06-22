@@ -89,6 +89,17 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user, account, trigger, session }) {
+      // If token has an id, verify the user still exists in DB
+      if (token.id) {
+        const exists = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { id: true },
+        })
+        if (!exists) {
+          // User was deleted (e.g. DB reset) — force re-login by clearing token
+          return {}
+        }
+      }
       if (user) {
         token.id = user.id
         token.picture = user.image ?? null
