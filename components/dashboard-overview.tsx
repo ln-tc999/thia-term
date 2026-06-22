@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { motion } from "motion/react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Shield, Wallet, TrendingUp } from "lucide-react"
