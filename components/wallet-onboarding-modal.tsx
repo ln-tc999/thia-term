@@ -49,6 +49,32 @@ export function WalletOnboardingModal({ open, onClose }: WalletOnboardingModalPr
     }
   }
 
+  const handleCreateDemo = async () => {
+    setCreating(true)
+    try {
+      const res = await fetch("/api/wallet/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+      const data = await res.json()
+      if (data.success) {
+        await update({
+          walletAddress: data.wallet.address,
+          walletType: data.wallet.type,
+        })
+        toast.success(data.message)
+        onClose()
+        setTimeout(() => window.location.reload(), 500)
+      } else {
+        toast.error(data.error || "Failed to create demo wallet")
+      }
+    } catch {
+      toast.error("Failed to create demo wallet. Please try again.")
+    } finally {
+      setCreating(false)
+    }
+  }
+
   const handleCopy = () => {
     if (!mnemonic) return
     navigator.clipboard.writeText(mnemonic)
@@ -83,17 +109,50 @@ export function WalletOnboardingModal({ open, onClose }: WalletOnboardingModalPr
         {step === "choice" && (
           <div className="space-y-3">
             <button
+              onClick={handleCreateDemo}
+              disabled={creating}
+              className="w-full text-left p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/15 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-sky-500/20">
+                  <Wallet className="h-5 w-5 text-sky-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-white">Try Demo Wallet</p>
+                    <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-sky-500/20 text-sky-400 rounded">DEMO</span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">Auto-generate T3N DID for testing</p>
+                </div>
+                {creating ? (
+                  <Loader2 className="h-5 w-5 text-sky-400 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-5 w-5 text-sky-500" />
+                )}
+              </div>
+            </button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/[0.08]"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-[#0a1220] px-2 text-slate-600">or</span>
+              </div>
+            </div>
+
+            <button
               onClick={handleCreate}
               disabled={creating}
               className="w-full text-left p-4 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-sky-500/10">
-                  <Wallet className="h-5 w-5 text-sky-400" />
+                <div className="p-2 rounded-lg bg-white/[0.06]">
+                  <Wallet className="h-5 w-5 text-slate-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-white">Create New Wallet</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Generate a new wallet managed by T3N</p>
+                  <p className="text-sm font-medium text-white">Create Production Wallet</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Generate wallet with recovery phrase</p>
                 </div>
                 {creating ? (
                   <Loader2 className="h-5 w-5 text-sky-400 animate-spin" />
