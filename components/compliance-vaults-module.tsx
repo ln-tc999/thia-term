@@ -206,7 +206,7 @@ function VaultCard({ vault, onSelect }: { vault: ComplianceVault; onSelect: (vau
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+        return "bg-sky-500/10 text-sky-400 border-sky-500/20"
       case "paused":
         return "bg-amber-500/10 text-amber-400 border-amber-500/20"
       case "draft":
