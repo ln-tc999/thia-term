@@ -33,9 +33,9 @@ next-env.d.ts
 # Rust TEE contract build artifacts
 contracts/tee/*/target/
 
-# T3 implementation plan and reference docs (local)
-T3-IMPLEMENTATION-PLAN.md
-Terminal3.md
+# docs local (ignored at root only — tracked if in /docs/)
+/T3-IMPLEMENTATION-PLAN.md
+/Terminal3.md
 
 # ESLint config (auto-generated)
 .eslintrc.json
