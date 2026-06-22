@@ -154,7 +154,7 @@ export function DashboardOverview() {
   const hasCompletedSetup = hasPaymentLink && hasInvoice && !!walletAddress
   const onboardingSteps = [
     { step: 1, title: "Create a payment link", desc: "Share it to receive crypto payments instantly.", done: hasPaymentLink },
-    { step: 2, title: "Link your wallet", desc: "Connect to receive funds on HashKey Chain.", done: !!walletAddress },
+    { step: 2, title: "Link your wallet", desc: "Connect your T3N wallet to receive payments.", done: !!walletAddress },
     { step: 3, title: "Send an invoice", desc: "Professional invoices with built-in KYC/AML.", done: hasInvoice },
   ]
   const completedSteps = onboardingSteps.filter(s => s.done).length
@@ -373,7 +373,7 @@ export function DashboardOverview() {
           className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6"
         >
           <h2 className="text-base font-semibold text-white mb-1">Compliance Status</h2>
-          <p className="text-xs text-slate-500 mb-5">HashKey Testnet · Live</p>
+          <p className="text-xs text-slate-500 mb-5">T3N Testnet · Live</p>
 
           {loading ? (
             <div className="space-y-3">
