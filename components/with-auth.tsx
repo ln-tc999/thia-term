@@ -8,7 +8,7 @@ function LoadingSpinner({ label = 'Loading…' }: { label?: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080e1a' }}>
       <div className="text-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-emerald-500 border-t-transparent mx-auto mb-4" />
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-sky-500 border-t-transparent mx-auto mb-4" />
         <p className="text-sm text-slate-500">{label}</p>
       </div>
     </div>
