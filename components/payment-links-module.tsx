@@ -105,7 +105,7 @@ export function PaymentLinksModule() {
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-900/30 rounded-xl">
+            <Button className="bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white shadow-lg shadow-sky-900/30 rounded-xl">
               <Plus className="h-4 w-4 mr-2" /> Create Link
             </Button>
           </DialogTrigger>
@@ -134,7 +134,7 @@ export function PaymentLinksModule() {
             className="card-surface p-4"
           >
             <div className="flex items-center gap-2 mb-1">
-              <Icon className="h-3.5 w-3.5 text-emerald-400" />
+              <Icon className="h-3.5 w-3.5 text-sky-400" />
               <span className="text-xs text-slate-500">{label}</span>
             </div>
             <p className="text-2xl font-bold text-white">{value}</p>
@@ -149,7 +149,7 @@ export function PaymentLinksModule() {
             className="rounded-lg text-slate-500 data-[state=active]:bg-white/[0.08] data-[state=active]:text-white data-[state=active]:shadow-sm"
           >
             Active
-            <span className="ml-2 text-xs bg-emerald-500/20 text-emerald-400 rounded-md px-1.5 py-0.5">{activeLinks.length}</span>
+            <span className="ml-2 text-xs bg-sky-500/20 text-sky-400 rounded-md px-1.5 py-0.5">{activeLinks.length}</span>
           </TabsTrigger>
           <TabsTrigger
             value="inactive"
@@ -168,13 +168,13 @@ export function PaymentLinksModule() {
           ) : activeLinks.length === 0 ? (
             <div className="text-center py-16 card-ghost">
               <div className="icon-well-empty">
-                <QrCode className="h-7 w-7 text-emerald-400" />
+                <QrCode className="h-7 w-7 text-sky-400" />
               </div>
               <p className="font-semibold text-slate-300">No active payment links</p>
               <p className="text-sm text-slate-600 mt-1 mb-4">Create a link to start accepting crypto payments</p>
               <Button
                 onClick={() => setShowCreateDialog(true)}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl"
+                className="bg-sky-600 hover:bg-sky-500 text-white rounded-xl"
               >
                 <Plus className="h-4 w-4 mr-2" /> Create your first link
               </Button>
@@ -222,17 +222,17 @@ function LinkCard({ link, onCopy, onDeactivate, onDelete }: { link: PaymentLink;
           <div className="flex items-center gap-2.5 mb-2">
             <div className={cn(
               "w-8 h-8 rounded-xl flex items-center justify-center shrink-0",
-              isActive ? "bg-emerald-500/10" : "bg-white/[0.04]"
+              isActive ? "bg-sky-500/10" : "bg-white/[0.04]"
             )}>
               {isActive
-                ? <Link2 className="h-4 w-4 text-emerald-400" />
+                ? <Link2 className="h-4 w-4 text-sky-400" />
                 : <Unlink className="h-4 w-4 text-slate-600" />}
             </div>
             <p className="font-semibold text-slate-200 truncate">{link.name ?? link.code}</p>
             <span className={cn(
               "shrink-0 text-xs px-2 py-0.5 rounded-full font-medium border",
               isActive
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                ? "bg-sky-500/10 text-sky-400 border-sky-500/20"
                 : "bg-white/[0.06] text-slate-500 border-white/10"
             )}>
               {link.status}
@@ -354,7 +354,7 @@ function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
           placeholder="e.g. Conference Ticket"
           value={name}
           onChange={e => setName(e.target.value)}
-          className="bg-white/[0.04] border-white/10 text-white placeholder:text-slate-600 focus:border-emerald-500/50 px-4 py-3"
+          className="bg-white/[0.04] border-white/10 text-white placeholder:text-slate-600 focus:border-sky-500/50 px-4 py-3"
         />
       </div>
       <div className="space-y-1.5">
@@ -403,7 +403,7 @@ function CreateLinkForm({ onSuccess }: { onSuccess: () => void }) {
         <Button
           onClick={handleCreate}
           disabled={loading}
-          className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl shadow-lg shadow-emerald-900/30"
+          className="flex-1 bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 text-white rounded-xl shadow-lg shadow-sky-900/30"
         >
           {loading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Creating…</> : 'Create Link'}
         </Button>
